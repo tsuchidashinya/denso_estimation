@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+python3 /home/ericlab/ros_package/integrate_ws/src/integrate_pkgs/networks/semantic_segmentation/pointnet_semantic/train.py \
+--dataroot /home/ericlab/tsuchida/2022_05/annotation/SemSeg/5_12_17_55_56 \
+--dataset_model t_pipe_1000.hdf5 \
+--dataset_mode semantic_segmentation \
+--checkpoints_dir /home/ericlab/tsuchida/2022_05/checkpoints/SemSeg/occlusion \
+--resolution 8192 \
+--phase train \
+--process_swich object_segment \
+--batch_size 1 \
+--num_epoch 200 \
+--max_dataset_size 1000 \
+--arch PointNet_Segmentation \
+--print_freq 100 \
+--save_latest_freq 20000 \
+--save_epoch_freq 20 \
+--run_test_freq 1 \
+--gpu_ids 0 \
+--gpu_num 1 \
+--num_threads 0 \
+--serial_batches False \
+--verbose_plot True \
+--lr 0.0001 \
+--is_train True \
+--checkpoints_human_swich ishiyama \
+--dataroot_swich semantic_occlusion \
+--local_checkpoints_dir /home/ericlab/tsuchida/local/checkout \
+--tensorboardX_results_directory /home/ericlab/tsuchida/local/checkout/tensorboardX/ \
+--tensorboardX_results_directory_switch tsuchida/3_14 \
+--instance_number 2 \
+--semantic_number 3
