@@ -19,7 +19,7 @@ class TestOptions_raugh_recognition():
         self.parser.add_argument('--process_swich', type=str, choices={"raugh_recognition", "object_segment"}, default="raugh_recognition")
         self.parser.add_argument('--batch_size', type=int, default=1)
         self.parser.add_argument('--num_epoch', type=int, default=150)
-        self.parser.add_argument('--arch', type=str, default="PointNet_Pose")
+        self.parser.add_argument('--arch', type=str, default="PointNetPose")
         self.parser.add_argument('--resolution', type=int, default=1024)
         self.parser.add_argument('--gpu_ids', type=str, default='-1')
         self.parser.add_argument('--gpu_num', type=int, default=1)

@@ -61,7 +61,7 @@ class PointNet_Semantic_Segmentation(nn.Module):
         super(PointNet_Semantic_Segmentation, self).__init__()
         self.num_class=num_class
         
-        self.pointnet_global_feat = PointNet_feat_SemanticSegmentation(global_feat = False, feature_transform = True)
+        self.PointNetGlobalFeature = PointNet_feat_SemanticSegmentation(global_feat = False, feature_transform = True)
         self.conv1 = nn.Conv1d(1088, 512, 1)
         self.conv2 = nn.Conv1d(512, 256, 1)
         self.conv3 = nn.Conv1d(256, 128, 1)
@@ -78,7 +78,7 @@ class PointNet_Semantic_Segmentation(nn.Module):
     def forward(self, x):
         batchsize = x.size()[0]
         pc_pts = x.size()[2]
-        x, trans, trans_feat = self.pointnet_global_feat(x)
+        x, trans, trans_feat = self.PointNetGlobalFeature(x)
         x = self.relu(self.bn1(self.conv1(x)))
         x = self.relu(self.bn2(self.conv2(x)))
         x = self.relu(self.bn3(self.conv3(x)))

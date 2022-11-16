@@ -7,7 +7,7 @@ import time
 import numpy as np
 from scipy.spatial.transform import Rotation
 from geometry_msgs.msg import PoseStamped
-from pose_estimation.pointnet_pose import create_model
+from pose_estimation.PointNetPose import create_model
 
 
 def estimation(model, data):

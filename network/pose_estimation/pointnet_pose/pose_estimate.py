@@ -47,7 +47,7 @@ class EstimatorModel:
     
 
     def define_network(self):
-        net = PointNet_Pose(3, 9)
+        net = PointNetPose(3, 9)
         net = net.to(self.device)
         return net
 
@@ -56,14 +56,7 @@ class EstimatorModel:
         loss = nn.MSELoss()
         return loss
     
-    def get_centroid(self, data):
-        x_mean = torch.mean(data, axis=1)
-        x_mean = x_mean.unsqueeze(1)
-        self.position_offset = x_mean
-        data = data - x_mean
-        return data
-
-
+    
     def set_input(self, data):
         if self.opt.phase == "train":
             # print("**************")
@@ -76,7 +69,6 @@ class EstimatorModel:
         elif self.opt.phase == "test":
             x_data = torch.from_numpy(data)
             x_data = x_data.float()
-            #x_data = self.get_centroid(x_data)
             x_data = x_data.transpose(2, 1)
             self.x_data = x_data.to(self.device)
 
@@ -128,32 +120,15 @@ class EstimatorModel:
 
 
     def test_step(self):
-        # print(self.x_data.shape)
-        # for i in range(4):
-        #     print(str(self.x_data[0][0][i]) +  " " + str(self.x_data[0][1][i]) +  " " + str(self.x_data[0][2][i]))
-        #     print("")
         print("raugh_recognition_input_pcl_number:" + str(self.x_data.shape))
         pred = self.net(self.x_data)
-
         pred = pred.to('cpu').detach().numpy().copy()
-        # print("****")
-        # print(type(pred))
-        # print(pred.shape)
-        # for i in range(4):
-        #     print(str(pred[0][0]) +  " " + str(pred[0][1]) +  " " + str(pred[0][2]) +  " " + str(pred[0][3]) +  " " + str(pred[0][5]))
-        #     print(str(pred[0][6]) +  " " + str(pred[0][7]) +  " " + str(pred[0][8]) +  " " + str(pred[0][9]) +  " " + str(pred[0][10]) +  " " + str(pred[0][11]))
-        #     print("")
         return pred
 
 
     def acc_step(self):
         pred = self.net(self.x_data)
-        # print("p")
-        # print(pred.shape)
         pred = pred.to('cpu').detach().numpy().copy()
-        # print("pred")
-        # print(pred.shape)
-      
         return pred
 
 
@@ -161,11 +136,8 @@ class EstimatorModel:
         save_filename = "latest_net.pth"
         load_path = join(self.save_dir, save_filename)
         net = self.net
-
         if isinstance(net, torch.nn.DataParallel):
             net = net.module
-        
-        # print("loading the model from %s" % load_path)
         state_dict = torch.load(load_path, self.device)
         if hasattr(state_dict, "_metadata"):
             del state_dict._metadata

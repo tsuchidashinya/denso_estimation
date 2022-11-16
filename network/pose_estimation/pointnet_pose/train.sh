@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-python3 /home/ericlab/ros_package/integrate_ws/src/integrate_pkgs/networks/raugh_recognition/pointnet_pose/train.py \
+python3 /home/ericlab/ros_package/integrate_ws/src/integrate_pkgs/networks/raugh_recognition/PointNetPose/train.py \
 --dataroot /home/ericlab/tsuchida/2022_05/annotation/pose/5_11_12_59_48_random \
 --dataset_model t_pipe_10000.hdf5 \
 --checkpoints_dir /home/ericlab/tsuchida/2022_05/checkpoints/pose/random \
@@ -10,7 +10,7 @@ python3 /home/ericlab/ros_package/integrate_ws/src/integrate_pkgs/networks/raugh
 --batch_size 1 \
 --num_epoch 200 \
 --max_dataset_size 10000 \
---arch PointNet_Pose \
+--arch PointNetPose \
 --print_freq 1000 \
 --save_latest_freq 20000 \
 --save_epoch_freq 5 \
@@ -24,5 +24,5 @@ python3 /home/ericlab/ros_package/integrate_ws/src/integrate_pkgs/networks/raugh
 --checkpoints_human_swich tsuchida_raugh \
 --dataroot_swich front \
 --local_checkpoints_dir /home/ericlab/DENSO_results/raugh_recognition/checkpoint \
---tensorboardX_results_directory /home/ericlab/ros_package/integrate_ws/src/networks/raugh_recognition/pointnet_pose/tensorboardX \
+--tensorboardX_results_directory /home/ericlab/ros_package/integrate_ws/src/networks/raugh_recognition/PointNetPose/tensorboardX \
 --tensorboardX_results_directory_switch tsuchida_raugh/0628 \

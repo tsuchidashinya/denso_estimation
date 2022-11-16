@@ -1,0 +1,60 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/ericlab/tsuchida/ros_package/tsuchida_ws/devel/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/estimation/all_estimator/include/**",
+        "/home/ericlab/tsuchida/ros_package/tsuchida_ws/src/denso_annotation_pkg/annotation_client_pkg/include/**",
+        "/home/ericlab/tsuchida/ros_package/tsuchida_ws/src/denso_annotation_pkg/annotation_common/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/robot_environment/arm_manipulation/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/robot_environment/3d_calibration_pkgs/aruco_ros/aruco/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/robot_environment/3d_calibration_pkgs/aruco_ros/aruco_ros/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/robot_environment/3d_calibration_pkgs/calibration_2d_to_3d/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/robot_environment/3d_calibration_pkgs/calibration_setting/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/robot_environment/real_ur3/controller_stopper/include/**",
+        "/home/ericlab/tsuchida/ros_package/tsuchida_ws/src/denso_common_pkg/data_transform_pkg/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/robot_environment/gazebo_plugin/gazebo-pkgs/gazebo_grasp_plugin/include/**",
+        "/home/ericlab/tsuchida/ros_package/tsuchida_ws/src/denso_annotation_pkg/gazebo_model_package/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/annotation/gazebo_domain_randomization/gazebo_physics_plugin/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/annotation/gazebo_domain_randomization/gazebo_scene_plugin/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/robot_environment/gazebo_plugin/gazebo-pkgs/gazebo_state_plugins/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/robot_environment/gazebo_plugin/gazebo-pkgs/gazebo_test_tools/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/robot_environment/gazebo_plugin/gazebo-pkgs/gazebo_version_helpers/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/robot_environment/gazebo_plugin/gazebo-pkgs/gazebo_world_plugin_loader/include/**",
+        "/home/ericlab/tsuchida/ros_package/tsuchida_ws/src/denso_annotation_pkg/labeling_package/include/**",
+        "/home/ericlab/tsuchida/ros_package/tsuchida_ws/src/denso_annotation_pkg/mesh_cloud_package/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/robot_environment/gazebo_plugin/general-message-pkgs/object_msgs_tools/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/annotation/pose_estimation_annotation/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/estimation/pose_estimator_test/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/annotation/realworld_annotation/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/robot_environment/gazebo_plugin/roboticsgroup_upatras_gazebo_plugins/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/robot_environment/real_gripper/robotiq_2f_gripper_control/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/annotation/segmentation_annotation/include/**",
+        "/home/ericlab/tsuchida/ros_package/tsuchida_ws/src/denso_common_pkg/sensor_package/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/robot_environment/setup_simulator/include/**",
+        "/home/ericlab/tsuchida/ros_package/tsuchida_ws/src/denso_common_pkg/tf_package/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/estimation/tsuchida_estimator/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/estimation/tsuchida_gazebo/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/robot_environment/real_ur3/ur_calibration/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/robot_environment/real_ur3/ur_controllers/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/robot_environment/real_ur3/ur_robot_driver/include/**",
+        "/home/ericlab/tsuchida/ros_package/tsuchida_ws/src/denso_common_pkg/util/include/**",
+        "/home/ericlab/tsuchida/ros_package/tsuchida_ws/src/denso_common_pkg/visualize_package/include/**",
+        "/home/ericlab/tsuchida/study/ros/noetic_ws/integrate_ws/src/integrate_pkgs/annotation/yolo_annotation/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
