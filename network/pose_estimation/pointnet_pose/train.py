@@ -1,10 +1,11 @@
 #! /usr/bin/env python3
 import os
-from data import dataset, data_util, data_loader
+from data import pose_dataset
+from network_common import network_util
 import torch
 import torch.utils.data
 import torch.nn as nn
-import POINTNET
+from model import POINTNET
 import matplotlib.pyplot as plt
 import argparse
 import numpy as np
@@ -19,19 +20,21 @@ parser.add_argument('--cuda', default=True, type=str2bool, help='Use CUDA to tra
 parser.add_argument('--lr', '--learning-rate', default=1e-3, type=float, help='initial learning rate')
 parser.add_argument('--checkpoints', default='weights/', help='Directory for saving checkpoint models')
 parser.add_argument('--num_epoch', type=int, default=150)
+parser.add_argument('--start_index', type=int, default=0)
 parser.add_argument('--save_epoch_freq', type=int, default=10, help='frequency of saving checkpoints at the end of epochs')
 args = parser.parse_args()
 
 print("------------------current main directory------------------")
 print(__file__)
 
-dataset_all = dataset.PoseDataset(args.dataset_path)
-print("dataset_all", dataset_all.__getitem__(1))
-train_dataset,_ = data_util.DivideTrainValDataset(dataset_all)
-print(train_dataset.__getitem__(1))
-train_dataloader = data_loader.TrainDataLoader(train_dataset, args.batch_size)
-temp = train_dataloader.__iter__()
-print("temp_next", temp.__next__)
+dataset_all = pose_dataset.PoseDataset(args.dataset_path, args.start_index)
+train_dataset,_ = network_util.DivideTrainValDataset(dataset_all)
+train_dataloader = torch.utils.data.DataLoader(
+                train_dataset,
+                batch_size=args.batch_size,
+                shuffle=True,
+                collate_fn=network_util.collate_fn)
+
 train_dataset_size = len(train_dataloader)
 # val_dataset_size = len(val_dataset)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -64,11 +67,12 @@ for epoch in range(args.num_epoch):
         loss_plot_y.append(loss)
         count = count + 1
         plot_x.append(count)
-        message = 'epoch: %d loss: %.3f ' %(epoch, loss)
+        message = 'epoch: %d loss: %.3f ' %(epoch + 1, loss)
+        print(message)
     if epoch % args.save_epoch_freq == 0:
         print("saving the model at the end of epoch %d, iter %d" % (epoch, total_steps))
         save_file = os.path.join(args.checkpoints, str(epoch) + ".pth")
-        torch.save(net.cpu().state_dict(), save_file)
+        torch.save(net.state_dict(), save_file)
 
 save_file = os.path.join(args.checkpoints, "latest.pth")
 torch.save(net.cpu().state_dict(), save_file)

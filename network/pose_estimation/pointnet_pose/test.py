@@ -1,52 +1,42 @@
 #!/usr/bin/env python3
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../trainer'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../../utils'))
-import time
 import numpy as np
 from scipy.spatial.transform import Rotation
 from geometry_msgs.msg import PoseStamped
-from pose_estimation.PointNetPose import create_model
+import torch
+import argparse
+import POINTNET
+import data.data_util as data_util
+from util import hdf5_function
 
+def get_net_output(model, input_data, device):
+    x_data = torch.from_numpy(input_data)
+    x_data = x_data.float()
+    x_data = x_data.transpose(2, 1)
+    x_data = x_data.to(device)
+    pred = model(x_data)
+    pred = pred.to('cpu').detach().numpy().copy()
+    return pred
 
-def estimation(model, data):
-    time_sta = time.time()
-    # print("estimation")
-    # print(model)
-    # print(data.shape)
-    model.set_input(data)
-    pred = model.test_step()
-    time_end = time.time()
-    return pred, (time_end - time_sta)
+def load_checkpoints(net, checkpoint_path, device):
+    state_dict = torch.load(checkpoint_path, device)
+    net.load_state_dict(state_dict, strict=False)
+    return net
+
+def get_device():
+    return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+def get_network(device):
+    net = POINTNET.PointNetPose(3, 9)
+    return net.to(device)
 
     
-def pose_prediction(opt, data, arg):
-    if arg == "PointNet":
-        n_data = len(data)
-        row = 3
-        col = n_data // row
-        x = np.reshape(np.array(data), (col, row))[np.newaxis, :, :]
-    elif arg == "integ_final_PointNet":
-        # x = getNormalizedPcd(data, 1024)
-        x = data[np.newaxis, :, :]
-    # for i in range(20):
-    #     print("x: " + str(x[0][0]) +  "  z: " + str(x[0][2]))
-    y_pre = estimation(opt, x)
-    # print(y_pre.shape)
-    for pre in y_pre:
-        # print("****")
-        # print(pre.shape)
-        y = pre[0]
-        break
-    
-    est_time = y_pre[1]
-    y_pos = y[0:3]
-    rot = Rotation.from_matrix(y[3:12].reshape(3, 3))
+def pose_estimation(net, input_data, device):
+    input_data = input_data[np.newaxis, :, :]
+    y_pre = get_net_output(net, input_data, device)
+    y_pos = y_pre[0][0:3]
+    rot = Rotation.from_matrix(np.array(y_pre[0][3:12]).reshape(3, 3))
     y_euler = rot.as_quat()
     y = np.r_[y_pos, y_euler]
-    
-
     est_pose = PoseStamped()
     est_pose.pose.position.x = y[0]
     est_pose.pose.position.y = y[1]
@@ -55,52 +45,21 @@ def pose_prediction(opt, data, arg):
     est_pose.pose.orientation.y = y[4]
     est_pose.pose.orientation.z = y[5]
     est_pose.pose.orientation.w = y[6]
+    return est_pose
 
-    return (est_pose, est_time)
+if __name__=='__main__':
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('--dataset_path', help='Dataset root directory path')
+    parser.add_argument('--checkpoints', default='weights/', help='Directory for saving checkpoint models')
+    args = parser.parse_args()
+    hdf5_object = hdf5_function.open_readed_hdf5(args.dataset_path)
+    input_data = data_util.get_input_data_from_hdf5(hdf5_object, 3)
+    input_data = np.array(input_data)
+    device = get_device()
+    net = get_network(device)
+    net = load_checkpoints(net, args.checkpoints, device)
+    input_data, _ = data_util.getNormalizedPcd_nodown(input_data)
+    est_pose = pose_estimation(net, input_data, device)
+    print(est_pose)
 
 
-def run_test(opt, dataset):
-    
-    opt.serial_batches = True
-    val_loss = 0.0
-    model = create_model(opt)
-
-    for i, data in enumerate(dataset):
-        time_sta = time.time()
-
-        model.set_input(data)
-        loss = model.val_step()
-        time_end = time.time()
-
-        val_loss += loss
-    return val_loss
-
-def run_progress_savetest(opt, dataset, epoch):
-    opt.serial_batches = True
-    val_loss = 0.0
-    model = create_model(opt)
-
-    for i, data in enumerate(dataset):
-        time_sta = time.time()
-
-        model.set_input(data)
-        model.progress_save_pcd(opt, epoch, i)
-        time_end = time.time()
-
-    return
-
-def run_segmentation_test(opt, dataset):
-
-    opt.serial_batches = True
-    val_loss = 0.0
-    model = create_model(opt)
-
-    for i, data in enumerate(dataset):
-        time_sta = time.time()
-
-        model.set_input_segmentation(data)
-        loss = model.val_step()
-        time_end = time.time()
-
-        val_loss += loss
-    return val_loss
