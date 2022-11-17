@@ -1,41 +1,52 @@
 #! /usr/bin/env python3
-# -*- coding: utf-8 -*-
-import sys, os
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
-sys.path.append(os.path.join(os.path.dirname(__file__), './'))
-sys.path.append(os.path.join(os.path.dirname(__file__), './data'))
-sys.path.append(os.path.join(os.path.dirname(__file__), './options'))
+import os
 import numpy as np
 from tqdm import tqdm
-import torch, numpy, random
-
-from options.train_options import TrainOptions_semanctic_segmentation
-from options.test_options import TestOptions_semantic_segmentation
-from data import *
+import torch
+import torch.utils.data
+from data import segmentation_dataset
+from model import POINTNET_SEMANTIC
+from network_common import network_util
+from denso_estimation.network.semantic_segmentation.pointnet_semantic.data import segmentation_dataset
 from semantic_segmentation.pointnet_semantic import create_model
-from semantic_exec import *
+from denso_estimation.network.semantic_segmentation.pointnet_semantic.test import *
 from pointnet_semantic import *
-from common_function.writer import Writer
+import argparse
 import matplotlib.pyplot as plt
+def str2bool(v):
+    return v.lower() in ("yes", "true", "t", "1")
 
 if __name__ == '__main__':
     print("------------------current main directory------------------")
     print(__file__)
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('--dataset_path', help='Dataset root directory path')
+    parser.add_argument('--batch_size', default=4, type=int, help='Batch size for training')
+    parser.add_argument('--cuda', default=True, type=str2bool, help='Use CUDA to train model')
+    parser.add_argument('--lr', '--learning-rate', default=1e-3, type=float, help='initial learning rate')
+    parser.add_argument('--checkpoints', default='weights/', help='Directory for saving checkpoint models')
+    parser.add_argument('--num_epoch', type=int, default=150)
+    parser.add_argument('--start_index', type=int, default=0)
+    parser.add_argument('--save_epoch_freq', type=int, default=10, help='frequency of saving checkpoints at the end of epochs')
+    args = parser.parse_args()
+    
+    dataset_all = segmentation_dataset.SegmentationDataset(args.dataset_path, args.start_index)
+    train_dataset, _ = network_util.DivideTrainValDataset(dataset_all)
+    train_dataloader = torch.utils.data.DataLoader(
+        train_dataset,
+        batch_size=args.batch_size,
+        shuffle=True,
+        collate_fn=network_util.collate_fn
+    )
+    
 
-    opt = TrainOptions_semanctic_segmentation().train_parse()
-    opt_v = TestOptions_semantic_segmentation().test_parse()
-    print(opt.arch)
-    train_dataset, val_dataset = TrainValDataset(opt)
-    train_dataset = TrainDataLoader(train_dataset, opt)
-    val_dataset = ValDataLoader(val_dataset, opt)
-
-    train_dataset_size = len(train_dataset)
-    val_dataset_size = len(val_dataset)
+    train_dataset_size = len(train_dataloader)
+    # val_dataset_size = len(val_dataset)
 
     print("#training data = %d" % train_dataset_size)
-    print("#val data = %d" % val_dataset_size)
+    # print("#val data = %d" % val_dataset_size)
 
+    net = POINTNET_SEMANTIC
     model = create_model(opt)
     writer = Writer(opt)
     total_steps = 0
