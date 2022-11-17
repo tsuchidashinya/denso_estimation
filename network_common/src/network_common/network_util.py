@@ -1,12 +1,11 @@
-from tqdm import tqdm
-from util import hdf5_function, util_python
 import numpy as np
 from torch.utils.data.dataset import Subset
+import torch
 
 
-def print_current_losses(self, phase, epoch, i, losses):
+def print_current_losses(phase, epoch, losses):
     """ prints train loss on terminal / file """
-    message = '(phase: %s, epoch: %d, iters: %d) loss: %.3f ' %(phase, epoch, i, losses)
+    message = '(phase: %s, epoch: %d) loss: %.3f ' %(phase, epoch, losses)
     print(message)
 
 def DivideTrainValDataset(dataset):
@@ -37,3 +36,22 @@ def get_normalizedcloud_segmentation(input_cloud):
     mask_data = np.expand_dims(mask_data, 1)
     cloud_data = np.hstack([pre_cloud, mask_data])
     return cloud_data, cloud_offset[0]
+
+def batch_quat_to_rotmat(q, out=None):
+    batchsize = q.size(0)
+    if out is None:
+        out = torch.FloatTensor(batchsize, 3, 3)
+    # 2 / squared quaternion 2-norm
+    s = 2/torch.sum(q.pow(2), 1)
+    # coefficients of the Hamilton product of the quaternion with itself
+    h = torch.bmm(q.unsqueeze(2), q.unsqueeze(1))
+    out[:, 0, 0] = 1 - (h[:, 2, 2] + h[:, 3, 3]).mul(s)
+    out[:, 0, 1] = (h[:, 1, 2] - h[:, 3, 0]).mul(s)
+    out[:, 0, 2] = (h[:, 1, 3] + h[:, 2, 0]).mul(s)
+    out[:, 1, 0] = (h[:, 1, 2] + h[:, 3, 0]).mul(s)
+    out[:, 1, 1] = 1 - (h[:, 1, 1] + h[:, 3, 3]).mul(s)
+    out[:, 1, 2] = (h[:, 2, 3] - h[:, 1, 0]).mul(s)
+    out[:, 2, 0] = (h[:, 1, 3] - h[:, 2, 0]).mul(s)
+    out[:, 2, 1] = (h[:, 2, 3] + h[:, 1, 0]).mul(s)
+    out[:, 2, 2] = 1 - (h[:, 1, 1] + h[:, 2, 2]).mul(s)
+    return out

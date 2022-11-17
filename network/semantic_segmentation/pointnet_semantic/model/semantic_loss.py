@@ -2,9 +2,9 @@
 import torch
 import torch.nn as nn
 
-class Semantic_Loss(nn.Module):
+class SemanticLoss(nn.Module):
     def __init__(self, mat_diff_loss_scale=0.001, weight=None, reduction="mean"):
-        super(Semantic_Loss, self).__init__()
+        super(SemanticLoss, self).__init__()
         self.nll = nn.NLLLoss(weight, reduction=reduction)
         self.mat_diff_loss_scale = mat_diff_loss_scale
 

@@ -5,7 +5,7 @@ from tqdm import tqdm
 import torch
 import torch.utils.data
 from data import segmentation_dataset
-from model import POINTNET_SEMANTIC
+from model import POINTNET_SEMANTIC, semantic_loss
 from network_common import network_util
 from denso_estimation.network.semantic_segmentation.pointnet_semantic.data import segmentation_dataset
 from semantic_segmentation.pointnet_semantic import create_model
@@ -28,6 +28,7 @@ if __name__ == '__main__':
     parser.add_argument('--num_epoch', type=int, default=150)
     parser.add_argument('--start_index', type=int, default=0)
     parser.add_argument('--save_epoch_freq', type=int, default=10, help='frequency of saving checkpoints at the end of epochs')
+    parser.add_argument('--num_instance_classes', default=2, type=int)
     args = parser.parse_args()
     
     dataset_all = segmentation_dataset.SegmentationDataset(args.dataset_path, args.start_index)
@@ -45,51 +46,38 @@ if __name__ == '__main__':
 
     print("#training data = %d" % train_dataset_size)
     # print("#val data = %d" % val_dataset_size)
-
-    net = POINTNET_SEMANTIC
-    model = create_model(opt)
-    writer = Writer(opt)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    net = POINTNET_SEMANTIC.PointNetSemantic(args.num_instance_classes)
+    net = net.to(device)
+    optimizer = torch.optim.Adam(
+        net.parameters(), lr=args.lr)
+    criterion = semantic_loss.SemanticLoss()
+    criterion = criterion.to(device)
     total_steps = 0
     count = 0
     loss_plot_y = []
     plot_x = []
    
-    for epoch in range(opt.epoch_count, opt.num_epoch + 1):
-        epoch_start_time = time.time()
-        iter_data_time = time.time()
-        epoch_iter = 0
+    for epoch in range(args.num_epoch):
         train_loss = 0.0
-
-        for i, data in enumerate(train_dataset):
-            iter_start_time = time.time()
-            if total_steps % opt.print_freq == 0:
-                t_data = iter_start_time - iter_data_time
-
-            total_steps += opt.batch_size * opt.gpu_num
-            epoch_iter += opt.batch_size * opt.gpu_num
-
-            # print("***data****")
-            # print(data)
-            model.set_input_segmentation(data)
-            t_loss = model.train_step()
-            train_loss += t_loss
-            loss_plot_y.append(t_loss)
+        for i, data in enumerate(train_dataloader):
+            x_data = torch.from_numpy(data["x_data"].astype(np.float32))
+            y_data = torch.from_numpy(data["y_data"].astype(np.float32))
+            x_data = x_data.transpose(2, 1)
+            x_data, y_data = x_data.to(device), y_data.to(device)
+            net.train()
+            optimizer.zero_grad()
+            pred, trans_feat = net(x_data)
+            loss = criterion(pred, y_data, trans_feat)
+            loss.backward()
+            optimizer.step()
+            train_loss += loss
+            loss_plot_y.append(loss)
             count = count + 1
             plot_x.append(count)
-            # print("********************GOAL*************************")
-            # break
+            network_util.print_current_losses("train", epoch, loss)
 
-            if total_steps % opt.print_freq == 0:
-                t = (time.time() - iter_start_time / opt.batch_size)
-                writer.print_current_losses("train", epoch, epoch_iter, t_loss, t, t_data)
-
-            if i % opt.save_latest_freq == 0:
-                print("saving the latest model (epoch %d, total_steps %d)" % (epoch, total_steps))
-                model.save_network("latest")
-
-            iter_data_time = time.time()
-        # break
-        if epoch % opt.save_epoch_freq == 0:
+        if epoch % args.save_epoch_freq == 0:
             print("saving the model at the end of epoch %d, iter %d" % (epoch, total_steps))
             model.save_network("latest")
             model.save_network(epoch)

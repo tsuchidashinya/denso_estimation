@@ -37,9 +37,10 @@ train_dataloader = torch.utils.data.DataLoader(
 
 train_dataset_size = len(train_dataloader)
 # val_dataset_size = len(val_dataset)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 print("#training data = %d" % train_dataset_size)
 # print("#val data = %d" % val_dataset_size)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 net = POINTNET.PointNetPose(3, 9)
 net = net.to(device)

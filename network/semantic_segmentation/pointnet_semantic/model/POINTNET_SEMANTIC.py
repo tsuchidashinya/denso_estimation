@@ -4,14 +4,14 @@ import torch.nn.functional as F
 import torch
 from torch.autograd import Variable
 import torch.nn.parallel
-from common_function import util
+from network_common import network_util
 # from .semantic_loss import Semantic_Loss
 import numpy as np
 
 
-class PointNet_feat_SemanticSegmentation(nn.Module):
+class PointNetGlobalFeatureSemantic(nn.Module):
     def __init__(self, global_feat = False, feature_transform = True):
-        super(PointNet_feat_SemanticSegmentation, self).__init__()
+        super(PointNetGlobalFeatureSemantic, self).__init__()
         self.stn = STN3d()
         self.conv1 = torch.nn.Conv1d(3, 64, 1)
         self.conv2 = torch.nn.Conv1d(64, 128, 1)
@@ -52,16 +52,16 @@ class PointNet_feat_SemanticSegmentation(nn.Module):
             return torch.cat([x, pointfeat], 1), trans, trans_feat #convoluted point_cloud(concat final_encoded_data and data_passed_T-net (purpose:add ch_data)) and first T-net second T-Net
 
 
-class PointNet_Semantic_Segmentation(nn.Module):
+class PointNetSemantic(nn.Module):
     def __init__(self, num_class):
-        super(PointNet_Semantic_Segmentation, self).__init__()
+        super(PointNetSemantic, self).__init__()
         self.num_class=num_class
         
-        self.PointNetGlobalFeature = PointNet_feat_SemanticSegmentation(global_feat = False, feature_transform = True)
+        self.PointNetGlobalFeature = PointNetGlobalFeatureSemantic(global_feat = False, feature_transform = True)
         self.conv1 = nn.Conv1d(1088, 512, 1)
         self.conv2 = nn.Conv1d(512, 256, 1)
         self.conv3 = nn.Conv1d(256, 128, 1)
-        self.last_conv = nn.Conv1d(128, self.num_class,1)
+        self.last_conv = nn.Conv1d(128, self.num_class, 1)
 
         self.bn1 = nn.BatchNorm1d(512)
         self.bn2 = nn.BatchNorm1d(256)
@@ -127,7 +127,7 @@ class STN3d(nn.Module):
                 trans = Variable(torch.cuda.FloatTensor(batchsize, 3, 3))
             else:
                 trans = Variable(torch.FloatTensor(batchsize, 3, 3))
-            x = util.batch_quat_to_rotmat(x, trans)
+            x = network_util.batch_quat_to_rotmat(x, trans)
         else:
             x = x.view(-1, 3, 3)
         return x
