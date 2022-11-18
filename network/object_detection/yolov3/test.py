@@ -5,6 +5,8 @@ import yaml
 import argparse
 from data import data_util
 from pathlib import Path
+import cv2
+
 
 def get_net_output(net, pad_img, conf_threshhold, nms_threshhold, pad_info):
     with torch.no_grad():
@@ -38,8 +40,10 @@ def load_config(config_path):
         config_object = yaml.safe_load(f)
     return config_object
 
-def object_detection(net, config, input_data):
-    
+def object_detection(input_data, net, config, device):
+    pad_img, pad_info = data_util.make_paddingimg(input_data, config["test"]["img_size"] , device)
+    outputs = get_net_output(net, pad_img, config["test"]["conf_threshold"], config["test"]["nms_threshold"], pad_info)
+    return outputs
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -47,3 +51,9 @@ if __name__=='__main__':
     parser.add_argument('--checkpoints', default='weights/', help='Directory for saving checkpoint models')
     parser.add_argument('--num_instance_classes', default=2, type=int)
     args = parser.parse_args()
+    device = get_device()
+    config_object = load_config(args.config_path)
+    net = create_model(config_object, device)
+    net = load_checkpoints(net, args.checkpoints, device)
+    input_data = cv2.imread(args.dataset_path)
+    output = object_detection(input_data, net, config_object, device)
