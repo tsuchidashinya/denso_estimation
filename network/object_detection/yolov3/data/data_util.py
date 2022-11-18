@@ -92,46 +92,6 @@ def yolo_to_pascalvoc(bboxes):
     bboxes = torch.cat((x1, y1, x2, y2), dim=1)
     return bboxes
 
-def make_paddingimg(input, image_size, device, jitter=0, random_placing=False):
-    org_h, org_w, _ = input.shape
-    if jitter:
-        dw = jitter * org_w
-        dh = jitter * org_h
-        new_aspect = (org_w + np.random.uniform(low=-dw, high=dw)) / (
-            org_h + np.random.uniform(low=-dh, high=dh)
-        )
-    else:
-        new_aspect = org_w / org_h
-    if new_aspect < 1:
-        new_w = int(image_size * new_aspect)
-        new_h = image_size
-    else:
-        new_w = image_size
-        new_h = int(image_size / new_aspect)
-
-    if random_placing:
-        dx = int(np.random.uniform(image_size - new_w))
-        dy = int(np.random.uniform(image_size - new_h))
-    else:
-        dx = (image_size - new_w) // 2
-        dy = (image_size - new_h) // 2
-
-    img = cv2.resize(input, (new_w, new_h))
-    pad_img = np.full((image_size, image_size, 3), 127, dtype=np.uint8)
-    pad_img[dy : dy + new_h, dx : dx + new_w, :] = img
-    pad_img = transforms.ToTensor()(pad_img)
-    pad_img = pad_img.unsqueeze(0)
-    pad_img = pad_img.to(device)
-    scale_x = np.float32(new_w / org_w)
-    scale_y = np.float32(new_h / org_h)
-    pad_info = (scale_x, scale_y, dx, dy)
-    pad_infos = []
-    for x in pad_info:
-        y = torch.from_numpy(np.array([x], dtype=np.float32))
-        pad_infos.append(y)
-    pad_info = [x.to(device) for x in pad_infos]
-    return pad_img, pad_info
-
 def postprocess(outputs, conf_threshold, iou_threshold, pad_info):
     decoded = []
     for output, *pad_info in zip(outputs, *pad_info):

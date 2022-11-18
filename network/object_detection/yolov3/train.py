@@ -6,7 +6,7 @@ import torch.utils.data
 from itertools import repeat
 import yaml
 from model import YOLO, model_util
-from data import yolo_dataset
+from data import train_dataset
 import pandas as pd
 
 
@@ -71,7 +71,7 @@ if __name__=='__main__':
         model_util.parse_yolo_weights(net, args.weights)
         print(f"Darknet weights file {args.weights} loaded.")
     
-    train_dataset = yolo_dataset.CustomDataset(
+    train_dataset = train_dataset.CustomDataset(
         args.dataset_dir, class_names, train=True, img_size=img_size, 
         bbox_format="pascal_voc", augmentation=config_object["augmentation"],
     )
