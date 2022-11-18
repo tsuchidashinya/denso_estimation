@@ -1,2 +1,4 @@
 __pycache__
 *.pth
+*.weights
+darknet53.conv.74

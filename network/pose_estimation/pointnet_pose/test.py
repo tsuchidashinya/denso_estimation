@@ -4,8 +4,9 @@ from scipy.spatial.transform import Rotation
 from geometry_msgs.msg import PoseStamped
 import torch
 import argparse
-import POINTNET
-import data.data_util as data_util
+import model.POINTNET as POINTNET
+from network_common import network_util
+from data import pose_dataset
 from util import hdf5_function
 
 def get_net_output(model, input_data, device):
@@ -53,12 +54,12 @@ if __name__=='__main__':
     parser.add_argument('--checkpoints', default='weights/', help='Directory for saving checkpoint models')
     args = parser.parse_args()
     hdf5_object = hdf5_function.open_readed_hdf5(args.dataset_path)
-    input_data = data_util.get_input_data_from_hdf5(hdf5_object, 3)
+    input_data = pose_dataset.get_input_data_from_hdf5(hdf5_object, 3)
     input_data = np.array(input_data)
     device = get_device()
     net = get_network(device)
     net = load_checkpoints(net, args.checkpoints, device)
-    input_data, _ = data_util.getNormalizedPcd_nodown(input_data)
+    input_data, _ = network_util.get_normalizedcloud(input_data)
     est_pose = pose_estimation(net, input_data, device)
     print(est_pose)
 

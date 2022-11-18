@@ -14,8 +14,9 @@ train:
   momentum: 0.9
   decay: 0.0005
   max_iter: 100000
-  batch_size: 4
+  batch_size: 8
   subdivision: 16
+  img_size: 416
 augmentation:
   random_size: True
   lr_flip: True

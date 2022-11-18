@@ -1,110 +1,55 @@
 #!/usr/bin/env python3
-import sys
-import os
 import numpy as np
-import time
-from denso_msgs.msg import out_segmentation
-from estimation_msgs.msg import cloud_data
-from semantic_segmentation.pointnet_semantic import create_model
+import torch
+import argparse
+from network_common import network_util
+from data import segmentation_dataset
+from util import hdf5_function
+from model import POINTNET_SEMANTIC
 
-def estimation(model, data):
-    time_sta = time.time()
-    # print(data.shape)
-    model.set_input(data)
-    pred = model.test_step()
-    time_end = time.time()
-    return pred, (time_end - time_sta)
 
-def pose_prediction(opt, data, resolution):
-    # print(type(data))
-    n_data = len(data)
-    row = 3
-    col = n_data // row
-    x = data[np.newaxis, :, :]
-    y_pre = estimation(opt, x)
+def get_net_output(net, input_data, device):
+    x_data = torch.from_numpy(input_data)
+    x_data = x_data.float()
+    x_data = x_data.transpose(2, 1)
+    x_data = x_data.to(device)
+    pred, _ = net(x_data)
+    pred = pred.contiguous().cpu().data.max(2)[1].numpy()
+    return pred
+
+def create_model(class_num, device):
+    net = POINTNET_SEMANTIC.PointNetSemantic(class_num)
+    net = net.to(device)
+    return net
+
+def load_checkpoints(net, checkpoint_path, device):
+    state_dict = torch.load(checkpoint_path, device)
+    net.load_state_dict(state_dict, strict=False)
+    return net
+
+def get_device():
+    return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+def semantic_segmentation(net, input_data ,device):
+    x = input_data[np.newaxis, :, :]
+    y_pre = get_net_output(net, x, device)
     y = np.squeeze(y_pre[0])
-   
-    est_time = y_pre[1]
-    msg_out = out_segmentation()
-    raugh_data = []
-    for i in range(resolution):
-        msg_out.x.append(x[0][i][0])
-        msg_out.y.append(x[0][i][1])
-        msg_out.z.append(x[0][i][2])
-        msg_out.instance.append(y[i])
-        # print(y[i])
-        if y[i] == 0:
-        # if y[i] == 1:
-            raugh_data.append(x[0, i, :])
-            # print("*************")
-    raugh_data = np.array(raugh_data)
-    # raugh_data = raugh_data[np.newaxis, : , :]
+    outdata = np.hstack([input_data, y])
+    return outdata
 
-    return (msg_out, est_time, raugh_data)
-
-def pose_prediction_tsuchida(opt, data):
-    n_data = len(data)
-    x = data[np.newaxis, :, :]
-    y_pre = estimation(opt, x)
-    y = np.squeeze(y_pre[0])
-    segme_all = cloud_data()
-    mess_out = cloud_data()
-    for i in range(data.shape[0]):
-        segme_all.x.append(x[0][i][0])
-        segme_all.y.append(x[0][i][1])
-        segme_all.z.append(x[0][i][2])
-        segme_all.instance.append(y[i])
-        if y[i] == 0:
-            mess_out.x.append(x[0][i][0])
-            mess_out.y.append(x[0][i][1])
-            mess_out.z.append(x[0][i][2])
-            mess_out.instance.append(y[0])
+if __name__=='__main__':
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('--dataset_path', help='Dataset root directory path')
+    parser.add_argument('--checkpoints', default='weights/', help='Directory for saving checkpoint models')
+    parser.add_argument('--num_instance_classes', default=2, type=int)
+    args = parser.parse_args()
+    hdf5_object = hdf5_function.open_readed_hdf5(args.dataset_path)
+    input_data = segmentation_dataset.get_input_data_from_hdf5(hdf5_object, 3)
+    input_data = np.array(input_data)
+    device = get_device()
+    net = create_model(args.num_instance_classes, device)
+    net = load_checkpoints(net, args.checkpoints, device)
+    input_data, _ = network_util.get_normalizedcloud(input_data)
+    out_data = semantic_segmentation(net, input_data, device)
+    print(out_data)
     
-    return (segme_all, mess_out)
-
-
-def run_test(opt, dataset):
-    
-    opt.serial_batches = True
-    val_loss = 0.0
-    model = create_model(opt)
-
-    for i, data in enumerate(dataset):
-        time_sta = time.time()
-
-        model.set_input(data)
-        loss = model.val_step()
-        time_end = time.time()
-
-        val_loss += loss
-    return val_loss
-
-def run_progress_savetest(opt, dataset, epoch):
-    opt.serial_batches = True
-    val_loss = 0.0
-    model = create_model(opt)
-
-    for i, data in enumerate(dataset):
-        time_sta = time.time()
-
-        model.set_input(data)
-        model.progress_save_pcd(opt, epoch, i)
-        time_end = time.time()
-
-    return
-
-def run_segmentation_test(opt, dataset):
-
-    opt.serial_batches = True
-    val_loss = 0.0
-    model = create_model(opt)
-
-    for i, data in enumerate(dataset):
-        time_sta = time.time()
-
-        model.set_input_segmentation(data)
-        loss = model.val_step()
-        time_end = time.time()
-
-        val_loss += loss
-    return val_loss

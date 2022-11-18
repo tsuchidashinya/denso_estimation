@@ -15,6 +15,10 @@ def make_segmentation_data(hdf5_object, start_index):
         x_data.append(concat_data)
     return x_data
 
+def get_input_data_from_hdf5(hdf5_object, index):
+    pcl_data = hdf5_object["data_" + str(index)]['Points'][()]
+    return pcl_data
+
 class SegmentationDataset(torch.utils.data.Dataset):
     def __init__(self, data_path, start_index):
         super(SegmentationDataset, self).__init__()
@@ -23,9 +27,9 @@ class SegmentationDataset(torch.utils.data.Dataset):
         
     def __getitem__(self, index):
         pcd_data = self.x_data[index]
-        x_data, _ = network_util.get_normalizedcloud_segmentation(pcd_data)
-        x_data = x_data[:,:3]
-        y_data = x_data[:,3]
+        input_data, _ = network_util.get_normalizedcloud_segmentation(pcd_data)
+        x_data = input_data[:,:3]
+        y_data = input_data[:,3]
         meta = {}
         meta["x_data"] = x_data
         meta["y_data"] = y_data

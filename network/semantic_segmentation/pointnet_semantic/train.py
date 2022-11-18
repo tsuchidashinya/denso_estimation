@@ -1,18 +1,14 @@
 #! /usr/bin/env python3
 import os
 import numpy as np
-from tqdm import tqdm
 import torch
 import torch.utils.data
 from data import segmentation_dataset
 from model import POINTNET_SEMANTIC, semantic_loss
 from network_common import network_util
-from denso_estimation.network.semantic_segmentation.pointnet_semantic.data import segmentation_dataset
-from semantic_segmentation.pointnet_semantic import create_model
-from denso_estimation.network.semantic_segmentation.pointnet_semantic.test import *
-from pointnet_semantic import *
 import argparse
 import matplotlib.pyplot as plt
+
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
 
@@ -40,7 +36,6 @@ if __name__ == '__main__':
         collate_fn=network_util.collate_fn
     )
     
-
     train_dataset_size = len(train_dataloader)
     # val_dataset_size = len(val_dataset)
 
@@ -61,6 +56,7 @@ if __name__ == '__main__':
     for epoch in range(args.num_epoch):
         train_loss = 0.0
         for i, data in enumerate(train_dataloader):
+            total_steps += args.batch_size
             x_data = torch.from_numpy(data["x_data"].astype(np.float32))
             y_data = torch.from_numpy(data["y_data"].astype(np.float32))
             x_data = x_data.transpose(2, 1)
@@ -79,23 +75,12 @@ if __name__ == '__main__':
 
         if epoch % args.save_epoch_freq == 0:
             print("saving the model at the end of epoch %d, iter %d" % (epoch, total_steps))
-            model.save_network("latest")
-            model.save_network(epoch)
+            save_file = os.path.join(args.checkpoints, str(epoch) + ".pth")
+            torch.save(net.state_dict(), save_file)
 
-
-        if epoch % opt.run_test_freq == 0:
-            val_loss = run_segmentation_test(opt_v, val_dataset)
-            writer.print_current_losses("val", epoch, epoch_iter, t_loss, t, t_data)
-
-        if epoch % opt.run_test_freq == 0:
-            train_loss /= train_dataset_size
-            val_loss /= val_dataset_size
-            print("epoch: {}, train_loss: {:.3}" ", val_loss: {:.3}".format(epoch, train_loss, val_loss))
-            writer.plot_loss(epoch, train_loss, val_loss)
-        writer.close()
     plt.plot(plot_x, loss_plot_y)
     plt.grid()
-    plot_file = opt.checkpoints_dir + "/" + opt.dataset_mode + opt.checkpoints_human_swich + "/" + opt.arch + "/" + opt.dataset_model + "/loss_plot.png"
+    plot_file = os.path.join(args.checkpoints, "/loss_plot.png")
     plt.savefig(plot_file)
     print(plot_file)
     
