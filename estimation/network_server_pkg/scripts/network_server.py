@@ -9,8 +9,8 @@ from util import util_msg_data
 class NetworkServer:
     def __init__(self):
         self.set_parameter()
-        objec_detect_server = rospy.Service(self.object_detect_service_name, ObjectDetectionService, self.object_detect_callback)
-        cloud_network_server = rospy.Service(self.network_cloud_service_name, NetworkCloudService, self.network_cloud_callback)
+        rospy.Service(self.object_detect_service_name, ObjectDetectionService, self.object_detect_callback)
+        rospy.Service(self.network_cloud_service_name, NetworkCloudService, self.network_cloud_callback)
     
     def set_parameter(self):
         param_list = rosparam.get_param(rospy.get_name() + "/network_server")
