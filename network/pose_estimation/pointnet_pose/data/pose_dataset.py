@@ -3,16 +3,17 @@ import numpy as np
 from network_common import network_util
 import torch
 from tqdm import tqdm
-from util import hdf5_function, util_python
+from tf_package import tf_util
+from hdf5_package import hdf5_function
 
 
-def make_pose_data(hdf5_object, start_index):
+def msgposelist_to_trans_rotate(hdf5_object, start_index):
     x_data = []
     y_data = []
     for i in tqdm(range(hdf5_function.get_len_hdf5(hdf5_object))):
         pcl_data = hdf5_object["data_" + str(start_index + i)]['pcl'][()]
         pose_data = hdf5_object["data_" + str(start_index + i)]['pose'][()]
-        pose_data = util_python.conv_quat2mat(pose_data)
+        pose_data = tf_util.conv_quat2mat(pose_data)
         x_data.append(pcl_data)
         y_data.append(pose_data)
     return x_data, y_data
@@ -26,7 +27,7 @@ class PoseDataset(torch.utils.data.Dataset):
     def __init__(self, data_path, start_index):
         super(PoseDataset, self).__init__()
         self.hdf5_object = hdf5_function.open_readed_hdf5(data_path)
-        self.x_data, self.y_data = make_pose_data(self.hdf5_object, start_index)
+        self.x_data, self.y_data = msgposelist_to_trans_rotate(self.hdf5_object, start_index)
         
     def __getitem__(self, index):
         pcd_data = self.x_data[index]

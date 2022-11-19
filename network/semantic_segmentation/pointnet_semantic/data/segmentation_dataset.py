@@ -3,7 +3,7 @@ import numpy as np
 from network_common import network_util
 import torch
 from tqdm import tqdm
-from util import hdf5_function, util_python
+from hdf5_package import hdf5_function
 
 
 def make_segmentation_data(hdf5_object, start_index):

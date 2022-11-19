@@ -66,7 +66,6 @@ def draw_boxes(img, boxes, n_classes):
     fontsize = max(3, int(0.01 * min(img.size)))
     font = ImageFont.truetype(font_path, size=fontsize)
     for box in boxes:
-        # 矩形を画像の範囲内にクリップする。
         x1 = int(np.clip(box["x1"], 0, img.size[0] - 1))
         y1 = int(np.clip(box["y1"], 0, img.size[1] - 1))
         x2 = int(np.clip(box["x2"], 0, img.size[0] - 1))
@@ -99,7 +98,7 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--dataset_path', help='Dataset root directory path')
     parser.add_argument('--checkpoints', default='weights/', help='Directory for saving checkpoint models')
-    parser.add_argument('--num_instance_classes', default=2, type=int)
+    parser.add_argument('--config_path', default=2, type=int)
     args = parser.parse_args()
     device = get_device()
     config_object = load_config(args.config_path)

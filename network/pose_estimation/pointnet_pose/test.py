@@ -7,7 +7,7 @@ import argparse
 import model.POINTNET as POINTNET
 from network_common import network_util
 from data import pose_dataset
-from util import hdf5_function
+from hdf5_package import hdf5_function
 
 def get_net_output(model, input_data, device):
     x_data = torch.from_numpy(input_data)
