@@ -6,7 +6,7 @@ import yaml
 import argparse
 from data import data_util
 from pathlib import Path
-import cv2
+from common_msgs.msg import BoxPosition
 from data import test_dataset
 from PIL import Image, ImageDraw, ImageFont
 from matplotlib import pyplot as plt
@@ -59,8 +59,22 @@ def object_detection(input_data, net, config):
     outputs = get_net_output(net, pad_img, config["test"]["conf_threshold"], config["test"]["nms_threshold"], pad_info)
     return outputs
 
+def get_box_info(boxes):
+    out_data = []
+    for box in boxes:
+        x1 = int(np.clip(box["x1"], 0, img.size[0] - 1))
+        y1 = int(np.clip(box["y1"], 0, img.size[1] - 1))
+        x2 = int(np.clip(box["x2"], 0, img.size[0] - 1))
+        y2 = int(np.clip(box["y2"], 0, img.size[1] - 1))
+        box_coor = BoxPosition()
+        box_coor.x_one = x1 
+        box_coor.x_two = x2
+        box_coor.y_one = y1
+        box_coor.y_two = y2
+        out_data += [box_coor]
+    return out_data
+
 def draw_boxes(img, boxes, n_classes):
-    draw_mae = img
     draw = ImageDraw.Draw(img, mode="RGBA")
     cmap = plt.cm.get_cmap("hsv", n_classes)
     fontsize = max(3, int(0.01 * min(img.size)))
@@ -71,16 +85,6 @@ def draw_boxes(img, boxes, n_classes):
         x2 = int(np.clip(box["x2"], 0, img.size[0] - 1))
         y2 = int(np.clip(box["y2"], 0, img.size[1] - 1))
         caption = box["class_name"]
-        if caption == 'traffic light':
-            print("traffic light")
-            img_2 = np.asarray(draw_mae)
-            img_2 = cv2.cvtColor(img_2, cv2.COLOR_RGB2BGR)
-            cv2.imshow("img_2", img_2)
-            img_crop = draw_mae.crop((x1-10, y1-10, x2+10, y2+10))
-            img_3 = np.asarray(img_crop)
-            img_3 = cv2.cvtColor(img_3, cv2.COLOR_RGB2BGR)
-            cv2.imshow("img_3", img_3)
-            cv2.waitKey(1)
         if "confidence" in box:
             caption += f" {box['confidence']:.0%}"
         color = tuple(cmap(box["class_id"], bytes=True))

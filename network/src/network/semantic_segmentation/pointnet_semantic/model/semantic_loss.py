@@ -14,8 +14,6 @@ class SemanticLoss(nn.Module):
         pred = pred.view(batch_size * num_points, -1)
         target = target.view(batch_size * num_points)
         target = target.long()
-        # target = torch.tensor(target, dtype=torch.long)
-        # print(target.dtype)
         loss = self.nll(pred, target)
         return loss
 
