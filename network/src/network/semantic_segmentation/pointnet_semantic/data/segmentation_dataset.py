@@ -1,6 +1,6 @@
 import torch.utils.data
 import numpy as np
-from network_common import network_util
+from network.network_common import network_util
 import torch
 from tqdm import tqdm
 from hdf5_package import hdf5_function

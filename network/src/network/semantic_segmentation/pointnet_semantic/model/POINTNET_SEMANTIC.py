@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import torch
 from torch.autograd import Variable
 import torch.nn.parallel
-from network_common import network_util
+from network.network_common import network_util
 # from .semantic_loss import Semantic_Loss
 import numpy as np
 

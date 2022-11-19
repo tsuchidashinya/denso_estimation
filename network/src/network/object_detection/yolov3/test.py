@@ -30,7 +30,7 @@ def get_net_output(net, input,  pad_info, config_object, class_list):
     
 def load_checkpoints(net, checkpoint_path, device):
     state_dict = torch.load(checkpoint_path, device)
-    net.load_state_dict(state_dict, strict=False)
+    net.load_state_dict(state_dict["model"], strict=False)
     return net
 
 def get_class_names(config_path):
@@ -46,7 +46,7 @@ def get_device():
 
 def create_model(config_model, device):
     net = YOLO.YOLOv3(config_model["model"])
-    return net.to(device)
+    return net.to(device).eval()
 
 def load_config(config_path):
     with open(config_path) as f:
@@ -96,9 +96,10 @@ def draw_boxes(img, boxes, n_classes):
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--dataset_path', help='Dataset root directory path')
+    parser.add_argument('--dataset_path', help='Dataset root directory path', type=Path)
     parser.add_argument('--checkpoints', default='weights/', help='Directory for saving checkpoint models')
-    parser.add_argument('--config_path', default=2, type=int)
+    parser.add_argument('--config_path', default=2, type=Path)
+    parser.add_argument('--output_dir', type=Path)
     args = parser.parse_args()
     device = get_device()
     config_object = load_config(args.config_path)
@@ -106,7 +107,7 @@ if __name__=='__main__':
     img_size = config_object["test"]["img_size"]
     net = create_model(config_object, device)
     net = load_checkpoints(net, args.checkpoints, device)
-    dataset = test_dataset.ImageFolder(args.dataset_path, img_size)
+    dataset = test_dataset.ImageFolder(Path(args.dataset_path), img_size)
     dataloader = torch.utils.data.DataLoader(dataset, config_object["test"]["batch_size"])
     detections, image_paths = [], []
     for inputs, pad_infos, paths in dataloader:
@@ -122,5 +123,5 @@ if __name__=='__main__':
             )
         img = Image.open(image_path)
         draw_boxes(img, detection, len(class_list))
-        img.save(args.output / Path(image_path).name)
+        img.save(args.output_dir / Path(image_path).name)
         

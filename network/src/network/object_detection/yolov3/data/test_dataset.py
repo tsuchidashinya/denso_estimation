@@ -11,10 +11,8 @@ class ImageFolder(torch.utils.data.Dataset):
     def __init__(self, path, img_size):
         super().__init__()
         if path.is_dir():
-            # ディレクトリの場合
             self.img_paths = self.get_img_paths(path)
         else:
-            # ファイルの場合
             if not path.exists():
                 raise FileExistsError(f"image path {path} does not exist.")
             self.img_paths = [path]
@@ -22,11 +20,8 @@ class ImageFolder(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         path = str(self.img_paths[index])
-        # 画像を読み込む。
         img = cv2.imread(path)
-        # チャンネルの順番を変更する。 (B, G, R) -> (R, G, B)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        # レターボックス化する。
         img, pad_info = data_util.letterbox(img, self.img_size)
         # PIL -> Tensor
         img = transforms.ToTensor()(img)
