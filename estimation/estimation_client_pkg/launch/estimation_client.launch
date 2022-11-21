@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="estimation_client_pkg" type="estimation_client" name="estimation_client" output="screen">
+        <rosparam file="$(find estimation_client_pkg)/config/estimation_client.yaml" command="load" ns="" />
+    </node>
+</launch>

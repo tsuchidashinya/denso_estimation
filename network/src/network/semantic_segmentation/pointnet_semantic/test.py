@@ -3,9 +3,9 @@ import numpy as np
 import torch
 import argparse
 from network.network_common import network_util
-from data import segmentation_dataset
+from network.semantic_segmentation.pointnet_semantic.data import segmentation_dataset
 from hdf5_package import hdf5_function
-from model import POINTNET_SEMANTIC
+from network.semantic_segmentation.pointnet_semantic.model import POINTNET_SEMANTIC
 from util import util_msg_data
 
 
@@ -47,12 +47,14 @@ if __name__=='__main__':
     hdf5_object = hdf5_function.open_readed_hdf5(args.dataset_path)
     input_data = segmentation_dataset.get_input_data_from_hdf5(hdf5_object, 3)
     input_data = np.array(input_data)
+    print(input_data.shape)
     device = get_device()
     net = create_model(args.num_instance_classes, device)
     net = load_checkpoints(net, args.checkpoints, device)
     input_data, _ = network_util.get_normalizedcloud(input_data)
     out_data = semantic_segmentation(net, input_data, device)
-    print()
+    # input_data = util_msg_data.npcloud_to_msgcloud(input_data)
+    # print(util_msg_data.get_instance_dict(input_data))
     out_data_cloud = util_msg_data.npcloud_to_msgcloud(out_data)
     print(util_msg_data.get_instance_dict(out_data_cloud))
     # cloud_data = util_msg_data.npcloud_to_msgcloud(out_data)

@@ -1,15 +1,15 @@
 import torch
 import torch.utils.data
 import os
-from model import YOLO
+from network.object_detection.yolov3.model import YOLO
 import yaml
 import argparse
-from data import data_util
+from network.object_detection.yolov3.data import data_util, test_dataset
 from pathlib import Path
 from common_msgs.msg import BoxPosition
-from data import test_dataset
 from PIL import Image, ImageDraw, ImageFont
 from matplotlib import pyplot as plt
+from torchvision import transforms as transforms
 import numpy as np
 
 
@@ -53,13 +53,27 @@ def load_config(config_path):
         config_object = yaml.safe_load(f)
     return config_object
 
-def object_detection(input_data, net, config):
-    pad_img, pad_info = data_util.letterbox(input_data, config["test"]["img_size"])
-    pad_info = [x.to(device) for x in pad_info]
-    outputs = get_net_output(net, pad_img, config["test"]["conf_threshold"], config["test"]["nms_threshold"], pad_info)
-    return outputs
+def object_detection(input_data, net, config, device, class_list):
+    # pad_img, pad_infos = data_util.letterbox(input_data, config["test"]["img_size"])
+    # pad_img = transforms.ToTensor()(pad_img)
+    # pad_info = []
+    # for x in pad_infos:
+    #     y = torch.from_numpy(np.array([x], dtype=np.float32))
+    #     pad_info.append(y.to(device))
+    dataset = test_dataset.ImageList(input_data, config["test"]["img_size"])
+    dataloader = torch.utils.data.DataLoader(dataset, config["test"]["batch_size"])
+    detections, image_paths = [], []
+    for inputs, pad_infos in dataloader:
+        inputs = inputs.to(device)
+        pad_infos = [x.to(device) for x in pad_infos]
+        output = get_net_output(net, inputs, pad_infos, config, class_list)
+        print(np.array(output).shape)
+        return output[0]
+    # outputs = get_net_output(net, pad_img, pad_info, config, class_list)
+    # return outputs
 
 def get_box_info(boxes):
+
     out_data = []
     for box in boxes:
         x1 = int(np.clip(box["x1"], 0, img.size[0] - 1))

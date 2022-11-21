@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import torch
 from torchvision import transforms as transforms
-from data import data_util
+from network.object_detection.yolov3.data import data_util
 
 
 class ImageFolder(torch.utils.data.Dataset):

@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="network_server_pkg" type="network_server.py" name="network_server" output="screen">
+        <rosparam file="$(find network_server_pkg)/config/network_server.yaml" command="load" ns="" />
+    </node>
+</launch>

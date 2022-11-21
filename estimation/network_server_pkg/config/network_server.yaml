@@ -1,0 +1,10 @@
+network_server:
+  object_detect_service_name: object_detect_service
+  network_cloud_service_name: network_cloud_service
+  network_semantic_service_name: network_semantic_service
+  yolov3:
+    checkpoints: /home/ericlab/Downloads/yolo_simulator.pth
+    config_path: /home/ericlab/tsuchida/ros_package/study_ws/src/denso_estimation/network/src/network/object_detection/yolov3/config/yolov3_denso.yaml
+  semantic_pointnet:
+    class_num: 3
+    checkpoints: /home/ericlab/tsuchida/2022_11/checkpoints/SemSeg/semantic_segmentation/ishiyama/PointNet_Segmentation/honban_11_15_13_39_21/latest_net.pth

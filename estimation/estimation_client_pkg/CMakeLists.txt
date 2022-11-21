@@ -9,6 +9,15 @@ project(estimation_client_pkg)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  common_msgs
+  common_srvs
+  cv_bridge
+  pcl_ros
+  util
+  gazebo_model_package
+  tf_package
+  data_transform_pkg
+  anno_srvs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -101,9 +110,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+ INCLUDE_DIRS include
 #  LIBRARIES estimation_client_pkg
-#  CATKIN_DEPENDS roscpp
+ CATKIN_DEPENDS gazebo_model_package
 #  DEPENDS system_lib
 )
 
@@ -114,7 +123,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -202,3 +211,7 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+add_executable(estimation_client src/estimation_client.cpp)
+target_link_libraries(estimation_client
+  ${catkin_LIBRARIES}
+)
