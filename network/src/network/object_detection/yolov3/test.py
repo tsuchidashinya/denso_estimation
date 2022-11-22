@@ -30,7 +30,7 @@ def get_net_output(net, input,  pad_info, config_object, class_list):
     
 def load_checkpoints(net, checkpoint_path, device):
     state_dict = torch.load(checkpoint_path, device)
-    net.load_state_dict(state_dict["model"], strict=False)
+    net.load_state_dict(state_dict, strict=False)
     return net
 
 def get_class_names(config_path):

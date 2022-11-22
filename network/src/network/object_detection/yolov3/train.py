@@ -3,11 +3,11 @@ import os
 from pathlib import Path
 import torch
 import torch.utils.data
-from itertools import repeat
 import yaml
 from model import YOLO, model_util
 from data import train_dataset
 import pandas as pd
+from util import util
 
 
 def print_info(info):
@@ -109,13 +109,21 @@ if __name__=='__main__':
                 print_info(info)
         if epoch % args.save_epoch_freq == 0:
             print("saving the model at the end of epoch %d, iter %d" % (epoch, total_steps))
-            save_file = os.path.join(args.checkpoints, str(epoch) + ".pth")
-            history_path = os.path.join(args.checkpoints, f"history_{epoch:06d}.csv")
+            save_dir = os.path.join(args.checkpoints, util.get_time_str())
+            util.make_dir(save_dir)
+            save_file = os.path.join(save_dir, str(epoch) + ".pth")
+            save_file_latest = os.path.join(save_dir, "latest.pth")
+            history_path = os.path.join(save_dir, f"history_{epoch:06d}.csv")
             torch.save(net.state_dict(), save_file)
+            torch.save(net.state_dict(), save_file_latest)
             pd.DataFrame(history).to_csv(history_path, index=False)
             print(
                 f"Training state saved. checkpoints: {save_file}, loss history: {history_path}."
             )
+    save_dir = os.path.join(args.checkpoints, util.get_time_str())
+    save_file = os.path.join(save_dir, "latest.pth")
+    history_path = os.path.join(save_dir, "history_latest.csv")
+    torch.save(net.state_dict(), save_file)
 
 
             

@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 import torch
 from torchvision import ops as ops
+import os
 
 
 def encode_bboxes(bboxes, pad_info):
@@ -115,3 +116,31 @@ def output_to_dict(output, class_names):
         }
         detection.append(bbox)
     return detection
+
+def change_label_file(label_dir):
+    file_list = os.listdir(label_dir)
+    for file in file_list:
+        file_path = os.path.join(label_dir, file)
+        f = open(file_path, "r")
+        textline_list = f.readlines()
+        text_list = []
+        for textline in textline_list:
+            text_list.append(textline.split())
+        fw = open(file_path, "w")
+        for textline_list in text_list:
+            for i in range(len(textline_list)):
+                if i == 0:
+                    fw.write("HV8_occuluder ")
+                elif i == 1 or i == 3:
+                    fw.write(textline_list[i] + " ")
+                elif i == 2:
+                    fw.write(textline_list[4] + " ")
+                elif i == 4:
+                    fw.write(textline_list[2] + "\n")
+
+if __name__=='__main__':
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--folder")
+    args = parser.parse_args()
+    change_label_file(args.folder)

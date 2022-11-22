@@ -28,7 +28,7 @@ void EstimationClient::set_paramenter()
 void EstimationClient::main()
 {
     DecidePosition decide_gazebo_object;
-    GazeboModelMove gazebo_model_move(nh_);
+    GazeboMoveServer gazebo_model_move(nh_);
     std::vector<common_msgs::ObjectInfo> multi_object;
     for (int i = 0; i < 10; i++) {
         common_msgs::ObjectInfo object;
@@ -53,8 +53,8 @@ void EstimationClient::main()
     std::vector<common_msgs::BoxPosition> box_pos = ob_detect_2d_srv.response.b_boxs;
     Util::message_show("box size", box_pos.size());
     std::vector<float> cinfo_list = UtilMsgData::caminfo_to_floatlist(sensor_srv.response.camera_info);
-    cv::Mat img = UtilMsgData::img_to_cv(image, sensor_msgs::image_encodings::BGR8);
-    Get3DBy2D get3d(cinfo_list, UtilMsgData::get_image_size(img));
+    cv::Mat img = UtilMsgData::rosimg_to_cvimg(image, sensor_msgs::image_encodings::BGR8);
+    Get3DBy2D get3d(cinfo_list, Util::get_image_size(img));
     std::vector<common_msgs::CloudData> cloud_multi = get3d.get_out_data(sensor_cloud, box_pos);
     Util::message_show("cloud_multi", cloud_multi.size());
     common_srvs::SemanticSegmentationService semantic_srv;
