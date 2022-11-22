@@ -11,6 +11,7 @@ from PIL import Image, ImageDraw, ImageFont
 from matplotlib import pyplot as plt
 from torchvision import transforms as transforms
 import numpy as np
+import cv2
 
 
 font_path = str(Path(__file__).parent / "font/ipag.ttc")
@@ -54,32 +55,21 @@ def load_config(config_path):
     return config_object
 
 def object_detection(input_data, net, config, device, class_list):
-    # pad_img, pad_infos = data_util.letterbox(input_data, config["test"]["img_size"])
-    # pad_img = transforms.ToTensor()(pad_img)
-    # pad_info = []
-    # for x in pad_infos:
-    #     y = torch.from_numpy(np.array([x], dtype=np.float32))
-    #     pad_info.append(y.to(device))
     dataset = test_dataset.ImageList(input_data, config["test"]["img_size"])
     dataloader = torch.utils.data.DataLoader(dataset, config["test"]["batch_size"])
-    detections, image_paths = [], []
     for inputs, pad_infos in dataloader:
         inputs = inputs.to(device)
         pad_infos = [x.to(device) for x in pad_infos]
         output = get_net_output(net, inputs, pad_infos, config, class_list)
-        print(np.array(output).shape)
         return output[0]
-    # outputs = get_net_output(net, pad_img, pad_info, config, class_list)
-    # return outputs
 
-def get_box_info(boxes):
-
+def get_box_info(boxes, width, height):
     out_data = []
     for box in boxes:
-        x1 = int(np.clip(box["x1"], 0, img.size[0] - 1))
-        y1 = int(np.clip(box["y1"], 0, img.size[1] - 1))
-        x2 = int(np.clip(box["x2"], 0, img.size[0] - 1))
-        y2 = int(np.clip(box["y2"], 0, img.size[1] - 1))
+        x1 = int(np.clip(box["x1"], 0, width - 1))
+        y1 = int(np.clip(box["y1"], 0, height - 1))
+        x2 = int(np.clip(box["x2"], 0, width - 1))
+        y2 = int(np.clip(box["y2"], 0, height - 1))
         box_coor = BoxPosition()
         box_coor.x_one = x1 
         box_coor.x_two = x2
@@ -131,6 +121,8 @@ if __name__=='__main__':
     for inputs, pad_infos, paths in dataloader:
         inputs = inputs.to(device)
         pad_infos = [x.to(device) for x in pad_infos]
+        for i in pad_infos:
+            print(i)
         detections += get_net_output(net, inputs, pad_infos, config_object, class_list)
         image_paths += paths
     for detection, image_path in zip(detections, image_paths):

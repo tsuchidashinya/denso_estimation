@@ -51,16 +51,20 @@ void EstimationClient::main()
     ob_detect_2d_srv.request.input_image = image;
     Util::client_request(object_detect_client_, ob_detect_2d_srv, object_detect_service_name_);
     std::vector<common_msgs::BoxPosition> box_pos = ob_detect_2d_srv.response.b_boxs;
-    Util::message_show("box size", box_pos.size());
     std::vector<float> cinfo_list = UtilMsgData::caminfo_to_floatlist(sensor_srv.response.camera_info);
     cv::Mat img = UtilMsgData::rosimg_to_cvimg(image, sensor_msgs::image_encodings::BGR8);
     Get3DBy2D get3d(cinfo_list, Util::get_image_size(img));
     std::vector<common_msgs::CloudData> cloud_multi = get3d.get_out_data(sensor_cloud, box_pos);
-    Util::message_show("cloud_multi", cloud_multi.size());
     common_srvs::SemanticSegmentationService semantic_srv;
     semantic_srv.request.input_data_multi = cloud_multi;
     Util::client_request(cloud_network_client_, semantic_srv, cloud_network_service_name_);
 
+    common_srvs::VisualizeCloud visualize_srv;
+    visualize_srv.request.cloud_data_list = semantic_srv.response.output_data_multi;
+    for (int i = 0; i < semantic_srv.response.output_data_multi.size(); i++) {
+        visualize_srv.request.topic_name_list.push_back("cloud_multi_" + std::to_string(i));
+    }
+    Util::client_request(visualize_client_, visualize_srv, visualize_service_name_);
 }
 
 int main(int argc, char** argv)

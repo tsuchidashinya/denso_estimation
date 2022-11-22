@@ -1,5 +1,5 @@
 estimation_main:
-  visualize_service_name: visualize_service
+  visualize_service_name: visualize_cloud_service
   sensor_service_name: sensor_service
   object_detect_service_name: object_detect_service
   cloud_network_service_name: network_semantic_service

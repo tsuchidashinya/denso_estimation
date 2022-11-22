@@ -7,6 +7,7 @@ from common_srvs.srv import NetworkCloudService, NetworkCloudServiceResponse, Ne
 from common_srvs.srv import SemanticSegmentationService, SemanticSegmentationServiceResponse, SemanticSegmentationServiceRequest
 from common_srvs.srv import ObjectDetectionService, ObjectDetectionServiceResponse, ObjectDetectionServiceRequest
 from util import util_msg_data
+from network.network_common import network_util
 
 class NetworkServer:
     def __init__(self):
@@ -21,7 +22,6 @@ class NetworkServer:
         self.object_detect_service_name = param_list["object_detect_service_name"]
         self.network_cloud_service_name = param_list["network_cloud_service_name"]
         self.network_semantic_service_name = param_list["network_semantic_service_name"]
-        print(self.network_semantic_service_name)
         self.yolo_checkpoints = param_list["yolov3"]["checkpoints"]
         self.yolo_config_path = param_list["yolov3"]["config_path"]
         self.semantic_class_num = param_list["semantic_pointnet"]["class_num"]
@@ -32,16 +32,14 @@ class NetworkServer:
         self.yolo_config_object = yolo_run.load_config(self.yolo_config_path)
         self.yolo_class_list = yolo_run.get_class_names(self.yolo_config_path)
         self.yolo_net = yolo_run.create_model(self.yolo_config_object, self.device)
-
+        self.yolo_net = yolo_run.load_checkpoints(self.yolo_net, self.yolo_checkpoints, self.device)
         self.semantic_net = semantic_run.create_model(self.semantic_class_num, self.device)
         self.semantic_net = semantic_run.load_checkpoints(self.semantic_net, self.semantic_checkpoints, self.device)
         
     def object_detect_callback(self, request):
-        print('object_detect')
         img = util_msg_data.rosimg_to_npimg(request.input_image)
         detection = yolo_run.object_detection(img, self.yolo_net, self.yolo_config_object, self.device, self.yolo_class_list)
-        print(detection)
-        boxes_pos = yolo_run.get_box_info(detection)
+        boxes_pos = yolo_run.get_box_info(detection, img.shape[0], img.shape[1])
         response = ObjectDetectionServiceResponse()
         response.b_boxs = boxes_pos
         return response
@@ -58,10 +56,12 @@ class NetworkServer:
         # request = SemanticSegmentationServiceRequest()
         out_list = []
         for i in range(len(request.input_data_multi)):
-            outdata = semantic_run.semantic_segmentation(self.semantic_net, request.input_data_multi[i], self.device)
-            out_list.append(outdata)
+            np_input = util_msg_data.msgcloud_to_npcloud(request.input_data_multi[i])
+            np_input, _ = util_msg_data.extract_mask_from_npcloud(np_input)
+            np_input, _ = network_util.get_normalizedcloud(np_input)
+            outdata = semantic_run.semantic_segmentation(self.semantic_net, np_input, self.device)
             outcloud = util_msg_data.npcloud_to_msgcloud(outdata)
-            print(util_msg_data.get_instance_dict(outcloud))
+            out_list.append(outcloud)
         response = SemanticSegmentationServiceResponse()
         response.output_data_multi = out_list
         return response

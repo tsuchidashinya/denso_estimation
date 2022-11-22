@@ -23,7 +23,6 @@ class ImageFolder(torch.utils.data.Dataset):
         img = cv2.imread(path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img, pad_info = data_util.letterbox(img, self.img_size)
-        # PIL -> Tensor
         img = transforms.ToTensor()(img)
 
         return img, pad_info, path
@@ -51,19 +50,13 @@ class ImageList(torch.utils.data.Dataset):
             raise ValueError(
                 f"imgs type {type(imgs)} should be ndarray or list of ndarray."
             )
-
         self.img_size = img_size
 
     def __getitem__(self, index):
-        # 画像を読み込む。
         img = self.imgs[index]
-        # チャンネルの順番を変更する。 (B, G, R) -> (R, G, B)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        # レターボックス化する。
         img, pad_info = data_util.letterbox(img, self.img_size)
-        # PIL -> Tensor
         img = transforms.ToTensor()(img)
-
         return img, pad_info
 
     def __len__(self):

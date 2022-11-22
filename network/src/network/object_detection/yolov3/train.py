@@ -52,6 +52,7 @@ if __name__=='__main__':
         help="interval between saving checkpoints",
     )
     args = parser.parse_args()
+    time_str = util.get_time_str()
     with open(args.config_path) as f:
         config_object = yaml.safe_load(f)
     img_size = config_object["train"]["img_size"]
@@ -109,7 +110,7 @@ if __name__=='__main__':
                 print_info(info)
         if epoch % args.save_epoch_freq == 0:
             print("saving the model at the end of epoch %d, iter %d" % (epoch, total_steps))
-            save_dir = os.path.join(args.checkpoints, util.get_time_str())
+            save_dir = os.path.join(args.checkpoints, time_str)
             util.make_dir(save_dir)
             save_file = os.path.join(save_dir, str(epoch) + ".pth")
             save_file_latest = os.path.join(save_dir, "latest.pth")
@@ -120,7 +121,7 @@ if __name__=='__main__':
             print(
                 f"Training state saved. checkpoints: {save_file}, loss history: {history_path}."
             )
-    save_dir = os.path.join(args.checkpoints, util.get_time_str())
+    save_dir = os.path.join(args.checkpoints, time_str)
     save_file = os.path.join(save_dir, "latest.pth")
     history_path = os.path.join(save_dir, "history_latest.csv")
     torch.save(net.state_dict(), save_file)

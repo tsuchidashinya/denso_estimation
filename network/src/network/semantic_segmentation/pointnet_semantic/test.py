@@ -52,6 +52,7 @@ if __name__=='__main__':
     net = create_model(args.num_instance_classes, device)
     net = load_checkpoints(net, args.checkpoints, device)
     input_data, _ = network_util.get_normalizedcloud(input_data)
+    # print(input_data)
     out_data = semantic_segmentation(net, input_data, device)
     # input_data = util_msg_data.npcloud_to_msgcloud(input_data)
     # print(util_msg_data.get_instance_dict(input_data))
