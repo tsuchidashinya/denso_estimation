@@ -3,9 +3,9 @@ import os
 import numpy as np
 import torch
 import torch.utils.data
-from data import segmentation_dataset
-from model import POINTNET_SEMANTIC, semantic_loss
-from network_common import network_util
+from network.semantic_segmentation.pointnet_semantic.data import segmentation_dataset
+from network.semantic_segmentation.pointnet_semantic.model import POINTNET_SEMANTIC, semantic_loss
+from network.network_common import network_util
 import argparse
 import matplotlib.pyplot as plt
 

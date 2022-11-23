@@ -11,8 +11,9 @@ def make_segmentation_data(hdf5_object, start_index):
     for i in tqdm(range(hdf5_function.get_len_hdf5(hdf5_object))):
         pcl_data = hdf5_object["data_" + str(start_index + i)]['Points'][()]
         mask_data = hdf5_object["data_" + str(start_index + i)]['masks'][()]
-        concat_data = np.hstack([pcl_data, mask_data])
-        x_data.append(concat_data)
+        if pcl_data.shape[0] > 0:
+            concat_data = np.hstack([pcl_data, mask_data])
+            x_data.append(concat_data)
     return x_data
 
 def get_input_data_from_hdf5(hdf5_object, index):
