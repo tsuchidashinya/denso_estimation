@@ -18,9 +18,9 @@ decide_object_position:
   radious: 0.05
 
 data_transform_pkg:
-  f_scale: 0.5
-  cx_scale: 0.99
-  cy_scale: 0.9
+  f_scale: 0.968
+  cx_scale: 1.02
+  cy_scale: 1
 
 make_2Dinfo_by_3D:
   radious_x: 0.05
