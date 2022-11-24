@@ -10,7 +10,14 @@ def extract_ground_truth_parts(ground_truth_cloud, esti_cloud):
                 break
     return gt_parts
 
-def calcurate_iou(ground_truth_parts, instance):
+def get_gt_instance_num(ground_truth_cloud, instance):
+    gt_instance_num = 0
+    for i in range(ground_truth_cloud.shape[0]):
+        if int(ground_truth_cloud[i][3]) == instance:
+            gt_instance_num += 1
+    return gt_instance_num
+
+def calcurate_iou(ground_truth_parts, gt_instance_num, instance):
     tp = 0
     fp = 0
     fn = 0
@@ -19,6 +26,6 @@ def calcurate_iou(ground_truth_parts, instance):
             tp += 1
         else:
             fp += 1
-    fn = ground_truth_parts.shape[0] - tp
+    fn = gt_instance_num - tp
     iou = tp / (tp + fp + fn)
     return iou
