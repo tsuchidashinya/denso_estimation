@@ -43,3 +43,8 @@ add_executable(acc_estimation_client src/acc_estimation_client.cpp)
 target_link_libraries(acc_estimation_client
   ${catkin_LIBRARIES}
 )
+
+add_executable(estimation_client_real_sensor_hdf5 src/estimation_client_real_sensor_hdf5.cpp)
+target_link_libraries(estimation_client_real_sensor_hdf5
+  ${catkin_LIBRARIES}
+)

@@ -26,5 +26,5 @@ augmentation:
 test:
   batch_size: 64
   conf_threshold: 0.5
-  nms_threshold: 0.45
+  nms_threshold: 0.1
   img_size: 416

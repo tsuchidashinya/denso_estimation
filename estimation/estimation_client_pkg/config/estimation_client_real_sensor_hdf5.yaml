@@ -1,0 +1,27 @@
+acc_estimation_main:
+  visualize_service_name: visualize_cloud_service
+  visualize_image_service_name: visualize_image_service
+  object_detect_service_name: object_detect_service
+  cloud_network_service_name: network_semantic_service
+  accuracy_service_name: accuracy_service
+  hdf5_service_name: hdf5_real_phoxi_open_service
+  the_number_of_execute: 20
+decide_object_position:
+  sensor_name: phoxi_camera
+  sensor_angle_max: 0.087
+  sensor_angle_min: 0.087
+  distance: 1.1
+  z_position: 0.003
+  box_height: 0.01
+  box_name: denso_box
+  object_height: 0.15
+  radious: 0.05
+
+data_transform_pkg:
+  f_scale: 0.5
+  cx_scale: 0.99
+  cy_scale: 0.9
+
+make_2Dinfo_by_3D:
+  radious_x: 0.05
+  radious_y: 0.05

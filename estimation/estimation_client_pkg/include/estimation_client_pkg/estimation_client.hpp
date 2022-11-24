@@ -6,6 +6,7 @@
 #include <common_srvs/ObjectDetectionService.h>
 #include <common_srvs/IouCalcurateService.h>
 #include <common_srvs/Hdf5OpenService.h>
+#include <common_srvs/Hdf5RealPhoxiOpenService.h>
 #include <gazebo_model_package/decide_object_position.hpp>
 #include <gazebo_model_package/gazebo_model_move.hpp>
 #include <tf_package/tf_basic.hpp>
