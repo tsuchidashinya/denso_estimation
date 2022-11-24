@@ -55,10 +55,16 @@ void EstimationClient::acc_main(int index)
     vis_img_srv.request.image_list.push_back(out_img);
     vis_img_srv.request.topic_name_list.push_back("hdf5_image");
     Util::client_request(vis_image_client_, vis_img_srv, vis_image_service_name_);
-    visualize_srv.request.cloud_data_list = semantic_srv.response.output_data_multi;
+    // visualize_srv.request.cloud_data_list = semantic_srv.response.output_data_multi;
+    common_msgs::CloudData final_cloud;
     for (int i = 0; i < semantic_srv.response.output_data_multi.size(); i++) {
-        visualize_srv.request.topic_name_list.push_back("cloud_multi_" + std::to_string(i));
+        final_cloud = UtilMsgData::concat_cloudmsg(final_cloud, semantic_srv.response.output_data_multi[i]);
     }
+    // for (int i = 0; i < semantic_srv.response.output_data_multi.size(); i++) {
+    //     visualize_srv.request.topic_name_list.push_back("cloud_multi_" + std::to_string(i));
+    // }
+    visualize_srv.request.cloud_data_list.push_back(final_cloud);
+    visualize_srv.request.topic_name_list.push_back("final_cloud");
     Util::client_request(visualize_client_, visualize_srv, visualize_service_name_);
 }
 

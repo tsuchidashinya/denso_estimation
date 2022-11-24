@@ -58,9 +58,13 @@ class NetworkServer:
         for i in range(len(request.input_data_multi)):
             np_input = util_msg_data.msgcloud_to_npcloud(request.input_data_multi[i])
             np_input, _ = util_msg_data.extract_mask_from_npcloud(np_input)
-            np_input, _ = network_util.get_normalizedcloud(np_input)
+            np_input, offset = network_util.get_normalizedcloud(np_input)
+            print(offset.shape)
             outdata = semantic_run.semantic_segmentation(self.semantic_net, np_input, self.device)
             outcloud = util_msg_data.npcloud_to_msgcloud(outdata)
+            outcloud.x += offset[0][0]
+            outcloud.y += offset[0][1]
+            outcloud.z += offset[0][2]
             out_list.append(outcloud)
         response = SemanticSegmentationServiceResponse()
         response.output_data_multi = out_list
