@@ -45,18 +45,20 @@ void EstimationClient::acc_main(int index)
     Util::client_request(cloud_network_client_, semantic_srv, cloud_network_service_name_);
 
     common_srvs::VisualizeCloud visualize_srv;
-    visualize_srv.request.cloud_data_list.push_back(hdf5_srv.response.cloud_data);
-    visualize_srv.request.topic_name_list.push_back("hdf5_package");
-    Util::client_request(visualize_client_, visualize_srv, visualize_service_name_);
-
+    // visualize_srv.request.cloud_data_list.push_back(hdf5_srv.response.cloud_data);
+    // visualize_srv.request.topic_name_list.push_back("hdf5_package");
+    
+    cv::Mat draw_img = Make2DInfoBy3D::draw_b_box(img, box_pos);
+    sensor_msgs::Image out_img = UtilMsgData::cvimg_to_rosimg(draw_img, "bgr8");
     common_srvs::VisualizeImage vis_img_srv;
-    vis_img_srv.request.image_list.push_back(hdf5_srv.response.image);
+    vis_img_srv.request.image_list.push_back(out_img);
     vis_img_srv.request.topic_name_list.push_back("hdf5_image");
     Util::client_request(vis_image_client_, vis_img_srv, vis_image_service_name_);
-    // for (int i = 0; i < semantic_srv.response.output_data_multi.size(); i++) {
-    //     visualize_srv.request.topic_name_list.push_back("cloud_multi_" + std::to_string(i));
-    // }
-    
+    visualize_srv.request.cloud_data_list = semantic_srv.response.output_data_multi;
+    for (int i = 0; i < semantic_srv.response.output_data_multi.size(); i++) {
+        visualize_srv.request.topic_name_list.push_back("cloud_multi_" + std::to_string(i));
+    }
+    Util::client_request(visualize_client_, visualize_srv, visualize_service_name_);
 }
 
 int main(int argc, char** argv)
