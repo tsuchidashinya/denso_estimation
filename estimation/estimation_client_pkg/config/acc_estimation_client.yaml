@@ -3,7 +3,7 @@ acc_estimation_main:
   visualize_image_service_name: visualize_image_service
   object_detect_service_name: object_detect_service
   cloud_network_service_name: network_semantic_service
-  accuracy_service_name: accuracy_service
+  accuracy_service_name: accuracy_iou_service
   hdf5_service_name: hdf5_open_service
   the_number_of_execute: 20
 decide_object_position:

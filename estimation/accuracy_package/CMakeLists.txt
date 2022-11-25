@@ -9,21 +9,35 @@ project(accuracy_package)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  util 
+  common_srvs
 )
 
 catkin_python_setup()
 
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES accuracy_package
+ LIBRARIES accuracy_util
 #  CATKIN_DEPENDS roscpp
 #  DEPENDS system_lib
 )
 
 
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
 )
+
+add_library(accuracy_util src/accuracy_util.cpp)
+target_link_libraries(accuracy_util
+  ${catkin_LIBRARIES}
+)
+
+add_executable(accuracy_server src/accuracy_server.cpp src/accuracy_server_node.cpp)
+target_link_libraries(accuracy_server
+  accuracy_util
+  ${catkin_LIBRARIES}
+)
+
 
 

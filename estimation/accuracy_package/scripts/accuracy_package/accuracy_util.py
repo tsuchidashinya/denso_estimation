@@ -10,7 +10,7 @@ def extract_ground_truth_parts(ground_truth_cloud, esti_cloud):
                 break
     return gt_parts
 
-def get_gt_instance_num(ground_truth_cloud, instance):
+def get_gt_the_instance_quantity(ground_truth_cloud, instance):
     gt_instance_num = 0
     for i in range(ground_truth_cloud.shape[0]):
         if int(ground_truth_cloud[i][3]) == instance:
@@ -28,4 +28,11 @@ def calcurate_iou(ground_truth_parts, gt_instance_num, instance):
             fp += 1
     fn = gt_instance_num - tp
     iou = tp / (tp + fp + fn)
+    # print("tp: ", tp)
+    # print("fp: ", fp)
+    # print("fn: ", fn)
+    # print("gt_parts", ground_truth_parts.shape[0])
+    # print("gt_ins_num: ", gt_instance_num)
+    # print("iou: ", iou)
+    # print()
     return iou

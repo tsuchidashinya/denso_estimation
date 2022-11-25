@@ -9,7 +9,7 @@ pnh_("~")
     cloud_network_client_ = nh_.serviceClient<common_srvs::SemanticSegmentationService>(cloud_network_service_name_);
     visualize_client_ = nh_.serviceClient<common_srvs::VisualizeCloud>(visualize_service_name_);
     vis_image_client_ = nh_.serviceClient<common_srvs::VisualizeImage>(vis_image_service_name_);
-    accuracy_client_ = nh_.serviceClient<common_srvs::IouCalcurateService>(accuracy_service_name_);
+    accuracy_client_ = nh_.serviceClient<common_srvs::AccuracyIouService>(accuracy_service_name_);
     hdf5_client_ = nh_.serviceClient<common_srvs::Hdf5OpenService>(hdf5_service_name_);
 }
 
@@ -54,11 +54,28 @@ void EstimationClient::acc_main(int index)
     vis_img_srv.request.image_list.push_back(out_img);
     vis_img_srv.request.topic_name_list.push_back("hdf5_image");
     Util::client_request(vis_image_client_, vis_img_srv, vis_image_service_name_);
-    visualize_srv.request.cloud_data_list = semantic_srv.response.output_data_multi;
+    // visualize_srv.request.cloud_data_list = semantic_srv.response.output_data_multi;
+    // for (int i = 0; i < semantic_srv.response.output_data_multi.size(); i++) {
+    //     visualize_srv.request.topic_name_list.push_back("cloud_multi_" + std::to_string(i));
+    // }
+    common_msgs::CloudData final_cloud;
     for (int i = 0; i < semantic_srv.response.output_data_multi.size(); i++) {
-        visualize_srv.request.topic_name_list.push_back("cloud_multi_" + std::to_string(i));
+        final_cloud = UtilMsgData::concat_cloudmsg(final_cloud, semantic_srv.response.output_data_multi[i]);
     }
+    visualize_srv.request.cloud_data_list.push_back(final_cloud);
+    visualize_srv.request.topic_name_list.push_back("final_cloud");
     Util::client_request(visualize_client_, visualize_srv, visualize_service_name_);
+
+    common_srvs::AccuracyIouService accuracy_srv;
+    accuracy_srv.request.estimation_cloud = final_cloud;
+    accuracy_srv.request.instance = 1;
+    accuracy_srv.request.ground_truth_cloud = cloud_data;
+    accuracy_srv.request.ground_truth_cloud.cloud_name = "acc" + std::to_string(index);
+    ros::WallTime start = ros::WallTime::now();
+    Util::client_request(accuracy_client_, accuracy_srv, accuracy_service_name_);
+    ros::WallTime end = ros::WallTime::now();
+    std::string time_str = std::to_string((end - start).toSec());
+    Util::message_show("time: " + time_str + "  iou", accuracy_srv.response.iou_result);
 }
 
 int main(int argc, char** argv)
@@ -68,6 +85,6 @@ int main(int argc, char** argv)
     EstimationClient estimation_client(nh);
     for (int i = 0; i < estimation_client.the_number_of_execute_; i++) {
         estimation_client.acc_main(i+1);
-        ros::Duration(6).sleep();
+        ros::Duration(12).sleep();
     }
 }

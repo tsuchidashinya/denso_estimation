@@ -47,7 +47,6 @@ if __name__=='__main__':
     hdf5_object = hdf5_function.open_readed_hdf5(args.dataset_path)
     input_data = segmentation_dataset.get_input_data_from_hdf5(hdf5_object, 3)
     input_data = np.array(input_data)
-    print(input_data.shape)
     device = get_device()
     net = create_model(args.num_instance_classes, device)
     net = load_checkpoints(net, args.checkpoints, device)
