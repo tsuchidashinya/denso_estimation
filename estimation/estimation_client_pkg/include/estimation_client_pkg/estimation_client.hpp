@@ -34,6 +34,6 @@ private:
     std::string sensor_service_name_, object_detect_service_name_, visualize_service_name_,
     cloud_network_service_name_, accuracy_service_name_, hdf5_service_name_, vis_image_service_name_;
     std::string world_frame_, sensor_frame_;
-    TfBasic tf_basic_;
+    TfFunction tf_func_;
     UtilMsgData util_msg_data_;
 };
