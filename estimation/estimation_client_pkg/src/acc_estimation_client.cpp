@@ -32,6 +32,9 @@ void EstimationClient::acc_main(int index)
     Util::client_request(hdf5_client_, hdf5_srv, hdf5_service_name_);
     sensor_msgs::Image image = hdf5_srv.response.image;
     common_msgs::CloudData cloud_data = hdf5_srv.response.cloud_data;
+    for (int i = 2; i < 6; i++) {
+        cloud_data = UtilMsgData::change_ins_cloudmsg(cloud_data, i, 1);
+    }
     common_srvs::ObjectDetectionService ob_detect_2d_srv;
     ob_detect_2d_srv.request.input_image = hdf5_srv.response.image;
     Util::client_request(object_detect_client_, ob_detect_2d_srv, object_detect_service_name_);
