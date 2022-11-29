@@ -2,7 +2,7 @@
 <launch>
     <arg name="accuracy_iou_service_name" default="accuracy_iou_service"/>
     
-    <node pkg="accuracy_package" type="accuracy_server.py" name="accuracy_server">
+    <node pkg="accuracy_package" type="accuracy_server" name="accuracy_server">
         <param name="accuracy_iou_service_name" value="$(arg accuracy_iou_service_name)"/>
     </node>
 
