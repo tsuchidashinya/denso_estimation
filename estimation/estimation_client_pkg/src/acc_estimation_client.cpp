@@ -33,7 +33,12 @@ void EstimationClient::acc_main(int index)
     sensor_msgs::Image image = hdf5_srv.response.image;
     common_msgs::CloudData cloud_data = hdf5_srv.response.cloud_data;
     for (int i = 2; i < 6; i++) {
-        cloud_data = UtilMsgData::change_ins_cloudmsg(cloud_data, i, 1);
+        if (index == 2 && (i == 3 || i == 5)) {
+            cloud_data = UtilMsgData::change_ins_cloudmsg(cloud_data, i, 0);
+        }
+        else {
+            cloud_data = UtilMsgData::change_ins_cloudmsg(cloud_data, i, 1);
+        }
     }
     common_srvs::ObjectDetectionService ob_detect_2d_srv;
     ob_detect_2d_srv.request.input_image = hdf5_srv.response.image;
@@ -63,6 +68,8 @@ void EstimationClient::acc_main(int index)
     // }
     common_msgs::CloudData final_cloud;
     for (int i = 0; i < semantic_srv.response.output_data_multi.size(); i++) {
+        visualize_srv.request.cloud_data_list.push_back(semantic_srv.response.output_data_multi[i]);
+        visualize_srv.request.topic_name_list.push_back("cloud_multi_" + std::to_string(i));
         final_cloud = UtilMsgData::concat_cloudmsg(final_cloud, semantic_srv.response.output_data_multi[i]);
     }
     visualize_srv.request.cloud_data_list.push_back(final_cloud);
@@ -88,6 +95,6 @@ int main(int argc, char** argv)
     EstimationClient estimation_client(nh);
     for (int i = 0; i < estimation_client.the_number_of_execute_; i++) {
         estimation_client.acc_main(i+1);
-        ros::Duration(12).sleep();
+        ros::Duration(30).sleep();
     }
 }
