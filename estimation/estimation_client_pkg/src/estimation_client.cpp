@@ -53,7 +53,7 @@ void EstimationClient::main()
     std::vector<common_msgs::BoxPosition> box_pos = ob_detect_2d_srv.response.b_boxs;
     std::vector<float> cinfo_list = UtilMsgData::caminfo_to_floatlist(sensor_srv.response.camera_info);
     cv::Mat img = UtilMsgData::rosimg_to_cvimg(image, sensor_msgs::image_encodings::BGR8);
-    Get3DBy2D get3d(cinfo_list, Util::get_image_size(img));
+    Data2Dto3D get3d(cinfo_list, Util::get_image_size(img));
     std::vector<common_msgs::CloudData> cloud_multi = get3d.get_out_data(sensor_cloud, box_pos);
     common_srvs::SemanticSegmentationService semantic_srv;
     semantic_srv.request.input_data_multi = cloud_multi;

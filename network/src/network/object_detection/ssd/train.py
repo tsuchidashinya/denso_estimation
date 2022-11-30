@@ -35,7 +35,7 @@ def train(cfg, args):
 
     arguments = {"iteration": 0}
     save_to_disk = dist_util.get_rank() == 0
-    checkpointer = CheckPointer(model, optimizer, scheduler, cfg.OUTPUT_DIR, save_to_disk, logger)
+    checkpointer = CheckPointer(model, optimizer, scheduler, args.checkpoints, save_to_disk, logger)
     extra_checkpoint_data = checkpointer.load()
     arguments.update(extra_checkpoint_data)
 

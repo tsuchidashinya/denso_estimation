@@ -22,6 +22,6 @@ data_transform_pkg:
   cx_scale: 0.99
   cy_scale: 0.9
 
-make_2Dinfo_by_3D:
+data_3D_to_2D:
   radious_x: 0.05
   radious_y: 0.05

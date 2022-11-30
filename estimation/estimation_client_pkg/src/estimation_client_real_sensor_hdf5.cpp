@@ -38,13 +38,13 @@ void EstimationClient::acc_main(int index)
     std::vector<common_msgs::BoxPosition> box_pos = ob_detect_2d_srv.response.b_boxs;
     std::vector<float> cinfo_list = hdf5_srv.response.camera_info;
     cv::Mat img = UtilMsgData::rosimg_to_cvimg(image, sensor_msgs::image_encodings::BGR8);
-    Get3DBy2D get3d(cinfo_list, Util::get_image_size(img));
+    Data2Dto3D get3d(cinfo_list, Util::get_image_size(img));
     std::vector<common_msgs::CloudData> cloud_multi = get3d.get_out_data(cloud_data, box_pos);
     common_srvs::SemanticSegmentationService semantic_srv;
     semantic_srv.request.input_data_multi = cloud_multi;
     Util::client_request(cloud_network_client_, semantic_srv, cloud_network_service_name_);
     common_srvs::VisualizeCloud visualize_srv;
-    cv::Mat draw_img = Make2DInfoBy3D::draw_b_box(img, box_pos);
+    cv::Mat draw_img = Data3Dto2D::draw_b_box(img, box_pos);
     sensor_msgs::Image out_img = UtilMsgData::cvimg_to_rosimg(draw_img, "bgr8");
     common_srvs::VisualizeImage vis_img_srv;
     vis_img_srv.request.image_list.push_back(out_img);
