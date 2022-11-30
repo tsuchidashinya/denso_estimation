@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+from pathlib import Path
 
 import torch
 import torch.distributed as dist
@@ -54,6 +55,8 @@ def main():
         help="path to config file",
         type=str,
     )
+    parser.add_argument("--weights", type=Path)
+    parser.add_argument("--checkpoints", type=Path)
     parser.add_argument("--local_rank", type=int, default=0)
     parser.add_argument('--log_step', default=10, type=int, help='Print logs every log_step')
     parser.add_argument('--save_step', default=2500, type=int, help='Save checkpoint every save_step')
@@ -89,10 +92,10 @@ def main():
     cfg.merge_from_list(args.opts)
     cfg.freeze()
 
-    if cfg.OUTPUT_DIR:
-        mkdir(cfg.OUTPUT_DIR)
+    if args.checkpoints:
+        mkdir(args.checkpoints)
 
-    logger = setup_logger("SSD", dist_util.get_rank(), cfg.OUTPUT_DIR)
+    logger = setup_logger("SSD", dist_util.get_rank(), args.checkpoints)
     logger.info("Using {} GPUs".format(num_gpus))
     logger.info(args)
 

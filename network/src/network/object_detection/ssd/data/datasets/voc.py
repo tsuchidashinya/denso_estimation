@@ -25,8 +25,10 @@ class VOCDataset(torch.utils.data.Dataset):
         self.split = split
         self.transform = transform
         self.target_transform = target_transform
-        image_sets_file = os.path.join(self.data_dir, "ImageSets", "Main", "%s.txt" % self.split)
-        self.ids = VOCDataset._read_image_ids(image_sets_file)
+        # image_sets_file = os.path.join(self.data_dir, "ImageSets", "Main", "%s.txt" % self.split)
+        image_sets_dir = os.path.join(self.data_dir, "images")
+        # self.ids = VOCDataset._read_image_ids(image_sets_file)
+        self.ids = VOCDataset._read_image_list(image_sets_dir)
         self.keep_difficult = keep_difficult
 
         self.class_dict = {class_name: i for i, class_name in enumerate(self.class_names)}
@@ -50,7 +52,8 @@ class VOCDataset(torch.utils.data.Dataset):
 
     def get_annotation(self, index):
         image_id = self.ids[index]
-        return image_id, self._get_annotation(image_id)
+        # return image_id, self._get_annotation(image_id)
+        return image_id, self._get_annotation_denso(image_id)
 
     def __len__(self):
         return len(self.ids)
@@ -61,6 +64,15 @@ class VOCDataset(torch.utils.data.Dataset):
         with open(image_sets_file) as f:
             for line in f:
                 ids.append(line.rstrip())
+        return ids
+
+    @staticmethod
+    def _read_image_list(image_sets_dir):
+        # ids = []
+        # with open(image_sets_file) as f:
+        #     for line in f:
+        #         ids.append(line.rstrip())
+        ids = os.listdir(image_sets_dir)
         return ids
 
     def _get_annotation(self, image_id):
@@ -91,12 +103,16 @@ class VOCDataset(torch.utils.data.Dataset):
         labels = []
         is_difficult = []
         for line in lines:
-            label, *coords = line.split()
+            class_name, *coords = line.split()
             coords = list(map(float, coords))
             x1, y1, x2, y2 = coords
             boxes.append([x1, y1, x2, y2])
             labels.append(self.class_dict[class_name])
-        return np.array(bboxes), np.array(class_ids)
+            is_difficult.append(0)
+        return (np.array(boxes, dtype=np.float32),
+                np.array(labels, dtype=np.int64),
+                np.array(is_difficult, dtype=np.uint8))
+
 
     def get_img_info(self, index):
         img_id = self.ids[index]
