@@ -72,7 +72,6 @@ class VOCDataset(torch.utils.data.Dataset):
         for obj in objects:
             class_name = obj.find('name').text.lower().strip()
             bbox = obj.find('bndbox')
-            # VOC dataset format follows Matlab, in which indexes start from 0
             x1 = float(bbox.find('xmin').text) - 1
             y1 = float(bbox.find('ymin').text) - 1
             x2 = float(bbox.find('xmax').text) - 1
@@ -81,10 +80,23 @@ class VOCDataset(torch.utils.data.Dataset):
             labels.append(self.class_dict[class_name])
             is_difficult_str = obj.find('difficult').text
             is_difficult.append(int(is_difficult_str) if is_difficult_str else 0)
-
         return (np.array(boxes, dtype=np.float32),
                 np.array(labels, dtype=np.int64),
                 np.array(is_difficult, dtype=np.uint8))
+
+    def _get_annotation_denso(self, image_id):
+        annotation_file_path = os.path.join(self.data_dir, "labels", "%s.txt" % image_id)
+        lines = open(annotation_file_path).read().splitlines()
+        boxes = []
+        labels = []
+        is_difficult = []
+        for line in lines:
+            label, *coords = line.split()
+            coords = list(map(float, coords))
+            x1, y1, x2, y2 = coords
+            boxes.append([x1, y1, x2, y2])
+            labels.append(self.class_dict[class_name])
+        return np.array(bboxes), np.array(class_ids)
 
     def get_img_info(self, index):
         img_id = self.ids[index]
