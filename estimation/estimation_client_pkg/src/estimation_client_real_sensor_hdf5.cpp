@@ -36,7 +36,6 @@ void EstimationClient::acc_main(int index)
     ob_detect_2d_srv.request.input_image = hdf5_srv.response.image;
     Util::client_request(object_detect_client_, ob_detect_2d_srv, object_detect_service_name_);
     std::vector<common_msgs::BoxPosition> box_pos = ob_detect_2d_srv.response.b_boxs;
-    Util::message_show("box_size", box_pos.size());
     std::vector<float> cinfo_list = hdf5_srv.response.camera_info;
     cv::Mat img = UtilMsgData::rosimg_to_cvimg(image, sensor_msgs::image_encodings::BGR8);
     Get3DBy2D get3d(cinfo_list, Util::get_image_size(img));
@@ -44,27 +43,21 @@ void EstimationClient::acc_main(int index)
     common_srvs::SemanticSegmentationService semantic_srv;
     semantic_srv.request.input_data_multi = cloud_multi;
     Util::client_request(cloud_network_client_, semantic_srv, cloud_network_service_name_);
-
     common_srvs::VisualizeCloud visualize_srv;
-    // visualize_srv.request.cloud_data_list.push_back(hdf5_srv.response.cloud_data);
-    // visualize_srv.request.topic_name_list.push_back("hdf5_package");
-    
     cv::Mat draw_img = Make2DInfoBy3D::draw_b_box(img, box_pos);
     sensor_msgs::Image out_img = UtilMsgData::cvimg_to_rosimg(draw_img, "bgr8");
     common_srvs::VisualizeImage vis_img_srv;
     vis_img_srv.request.image_list.push_back(out_img);
-    vis_img_srv.request.topic_name_list.push_back("hdf5_image");
+    vis_img_srv.request.topic_name_list.push_back("hdf5_image_" + std::to_string(index));
     Util::client_request(vis_image_client_, vis_img_srv, vis_image_service_name_);
-    // visualize_srv.request.cloud_data_list = semantic_srv.response.output_data_multi;
     common_msgs::CloudData final_cloud;
     for (int i = 0; i < semantic_srv.response.output_data_multi.size(); i++) {
         final_cloud = UtilMsgData::concat_cloudmsg(final_cloud, semantic_srv.response.output_data_multi[i]);
+        visualize_srv.request.cloud_data_list.push_back(semantic_srv.response.output_data_multi[i]);
+        visualize_srv.request.topic_name_list.push_back("cloud_multi_" + std::to_string(index) + "_" + std::to_string(i));
     }
-    // for (int i = 0; i < semantic_srv.response.output_data_multi.size(); i++) {
-    //     visualize_srv.request.topic_name_list.push_back("cloud_multi_" + std::to_string(i));
-    // }
     visualize_srv.request.cloud_data_list.push_back(final_cloud);
-    visualize_srv.request.topic_name_list.push_back("final_cloud");
+    visualize_srv.request.topic_name_list.push_back("final_cloud_" + std::to_string(index));
     Util::client_request(visualize_client_, visualize_srv, visualize_service_name_);
 }
 
@@ -73,8 +66,9 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "estimation_client");
     ros::NodeHandle nh;
     EstimationClient estimation_client(nh);
-    for (int i = 0; i < estimation_client.the_number_of_execute_; i++) {
-        estimation_client.acc_main(i+1);
-        ros::Duration(6).sleep();
+    int data_size;
+    nh.getParam("hdf5_data_size", data_size);
+    for (int i = 1; i <= data_size; i++) {
+        estimation_client.acc_main(i);
     }
 }

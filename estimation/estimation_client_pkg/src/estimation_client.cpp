@@ -63,13 +63,11 @@ void EstimationClient::main()
     common_msgs::CloudData final_cloud;
     for (int i = 0; i < semantic_srv.response.output_data_multi.size(); i++) {
         final_cloud = UtilMsgData::concat_cloudmsg(final_cloud, semantic_srv.response.output_data_multi[i]);
+        visualize_srv.request.cloud_data_list.push_back(semantic_srv.response.output_data_multi[i]);
+        visualize_srv.request.topic_name_list.push_back("cloud_multi_" + std::to_string(i));
     }
     visualize_srv.request.cloud_data_list.push_back(final_cloud);
     visualize_srv.request.topic_name_list.push_back("final_cloud");
-    // visualize_srv.request.cloud_data_list = semantic_srv.response.output_data_multi;
-    // for (int i = 0; i < semantic_srv.response.output_data_multi.size(); i++) {
-    //     visualize_srv.request.topic_name_list.push_back("cloud_multi_" + std::to_string(i));
-    // }
     Util::client_request(visualize_client_, visualize_srv, visualize_service_name_);
 }
 

@@ -69,11 +69,11 @@ void EstimationClient::acc_main(int index)
     common_msgs::CloudData final_cloud;
     for (int i = 0; i < semantic_srv.response.output_data_multi.size(); i++) {
         visualize_srv.request.cloud_data_list.push_back(semantic_srv.response.output_data_multi[i]);
-        visualize_srv.request.topic_name_list.push_back("cloud_multi_" + std::to_string(i));
+        visualize_srv.request.topic_name_list.push_back("cloud_multi_" + std::to_string(index) + "_" + std::to_string(i));
         final_cloud = UtilMsgData::concat_cloudmsg(final_cloud, semantic_srv.response.output_data_multi[i]);
     }
     visualize_srv.request.cloud_data_list.push_back(final_cloud);
-    visualize_srv.request.topic_name_list.push_back("final_cloud");
+    visualize_srv.request.topic_name_list.push_back("final_cloud_" + std::to_string(index));
     Util::client_request(visualize_client_, visualize_srv, visualize_service_name_);
 
     common_srvs::AccuracyIouService accuracy_srv;
@@ -93,8 +93,9 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "estimation_client");
     ros::NodeHandle nh;
     EstimationClient estimation_client(nh);
-    for (int i = 0; i < estimation_client.the_number_of_execute_; i++) {
-        estimation_client.acc_main(i+1);
-        ros::Duration(30).sleep();
+    int data_size;
+    nh.getParam("hdf5_data_size", data_size);
+    for (int i = 1; i <= data_size; i++) {
+        estimation_client.acc_main(i);
     }
 }
