@@ -1,7 +1,7 @@
 from torch.utils.data import ConcatDataset
 
-from ssd.config.path_catlog import DatasetCatalog
-from .voc import VOCDataset
+from network.object_detection.ssd.config.path_catlog import DatasetCatalog
+from .voc import VOCDataset, VOCDatasetDenso
 from .coco import COCODataset
 
 _DATASETS = {
@@ -32,4 +32,8 @@ def build_dataset(dataset_list, transform=None, target_transform=None, is_train=
     if len(datasets) > 1:
         dataset = ConcatDataset(datasets)
 
+    return [dataset]
+
+def build_dataset_denso(dataset_dir, transform=None, target_transform=None, is_train=True):
+    dataset = VOCDatasetDenso(dataset_dir, transform, target_transform=target_transform)
     return [dataset]

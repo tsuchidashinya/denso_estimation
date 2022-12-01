@@ -1,4 +1,4 @@
-from ssd.modeling import registry
+from network.object_detection.ssd.modeling import registry
 from .vgg import VGG
 from .mobilenet import MobileNetV2
 from .efficient_net import EfficientNet

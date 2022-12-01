@@ -12,6 +12,7 @@ class YOLOv3(nn.Module):
         self.module_list = create_yolov3_modules(config_model)
 
     def forward(self, x, labels=None):
+        print(x.shape)
         train = labels is not None
         self.loss_dict = defaultdict(float)
 

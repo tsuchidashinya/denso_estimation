@@ -5,11 +5,11 @@ import torch
 import torch.utils.data
 from tqdm import tqdm
 
-from ssd.data.build import make_data_loader
-from ssd.data.datasets.evaluation import evaluate
+from network.object_detection.ssd.data.build import make_data_loader, make_data_loader_denso
+from network.object_detection.ssd.data.datasets.evaluation import evaluate
 
-from ssd.utils import dist_util, mkdir
-from ssd.utils.dist_util import synchronize, is_main_process
+from network.object_detection.ssd.utils import dist_util, mkdir
+from network.object_detection.ssd.utils.dist_util import synchronize, is_main_process
 
 
 def _accumulate_predictions_from_multiple_gpus(predictions_per_gpu):
@@ -77,6 +77,22 @@ def do_evaluation(cfg, model, distributed, **kwargs):
     eval_results = []
     for dataset_name, data_loader in zip(cfg.DATASETS.TEST, data_loaders_val):
         output_folder = os.path.join(cfg.OUTPUT_DIR, "inference", dataset_name)
+        if not os.path.exists(output_folder):
+            mkdir(output_folder)
+        eval_result = inference(model, data_loader, dataset_name, device, output_folder, **kwargs)
+        eval_results.append(eval_result)
+    return eval_results
+
+@torch.no_grad()
+def do_evaluation_denso(cfg, args, model, distributed, **kwargs):
+    if isinstance(model, torch.nn.parallel.DistributedDataParallel):
+        model = model.module
+    model.eval()
+    device = torch.device(cfg.MODEL.DEVICE)
+    data_loaders_val = make_data_loader_denso(cfg, args, is_train=False, distributed=distributed)
+    eval_results = []
+    for dataset_name, data_loader in zip(cfg.DATASETS.TEST, data_loaders_val):
+        output_folder = os.path.join(args.output_dir, "inference", dataset_name)
         if not os.path.exists(output_folder):
             mkdir(output_folder)
         eval_result = inference(model, data_loader, dataset_name, device, output_folder, **kwargs)

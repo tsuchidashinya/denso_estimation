@@ -1,12 +1,12 @@
 import argparse
 import logging
 import os
-
+from pathlib import Path
 import torch
 import torch.utils.data
 
 from ssd.config import cfg
-from ssd.engine.inference import do_evaluation
+from ssd.engine.inference import do_evaluation, do_evaluation_denso
 from ssd.modeling.detector import build_detection_model
 from ssd.utils import dist_util
 from ssd.utils.checkpoint import CheckPointer
@@ -14,15 +14,15 @@ from ssd.utils.dist_util import synchronize
 from ssd.utils.logger import setup_logger
 
 
-def evaluation(cfg, ckpt, distributed):
+def evaluation(cfg, args, ckpt, distributed):
     logger = logging.getLogger("SSD.inference")
 
     model = build_detection_model(cfg)
-    checkpointer = CheckPointer(model, save_dir=cfg.OUTPUT_DIR, logger=logger)
+    checkpointer = CheckPointer(model, save_dir=args.checkpoints_dir, logger=logger)
     device = torch.device(cfg.MODEL.DEVICE)
     model.to(device)
     checkpointer.load(ckpt, use_latest=ckpt is None)
-    do_evaluation(cfg, model, distributed)
+    do_evaluation_denso(cfg, args, model, distributed)
 
 
 def main():
@@ -43,7 +43,8 @@ def main():
     )
 
     parser.add_argument("--output_dir", default="eval_results", type=str, help="The directory to store evaluation results.")
-
+    parser.add_argument("--dataset_dir", type=Path)
+    parser.add_argument("--checkpoints_dir", type=Path)
     parser.add_argument(
         "opts",
         help="Modify config options using the command-line",
@@ -68,7 +69,7 @@ def main():
     cfg.merge_from_list(args.opts)
     cfg.freeze()
 
-    logger = setup_logger("SSD", dist_util.get_rank(), cfg.OUTPUT_DIR)
+    logger = setup_logger("SSD", dist_util.get_rank(), args.output_dir)
     logger.info("Using {} GPUs".format(num_gpus))
     logger.info(args)
 
@@ -77,7 +78,7 @@ def main():
         config_str = "\n" + cf.read()
         logger.info(config_str)
     logger.info("Running with config:\n{}".format(cfg))
-    evaluation(cfg, ckpt=args.ckpt, distributed=distributed)
+    evaluation(cfg, args, ckpt=args.ckpt, distributed=distributed)
 
 
 if __name__ == '__main__':

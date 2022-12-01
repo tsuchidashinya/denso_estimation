@@ -30,6 +30,8 @@ class CustomDataset(torch.utils.data.Dataset):
             img, self.img_size, jitter=self.jitter, random_placing=self.random_placing
         )
         img = transforms.ToTensor()(img)
+        print("img")
+        print(img.shape)
         if len(bboxes) > 0:
             bboxes = data_util.coco_to_yolo(bboxes)
             bboxes = data_util.encode_bboxes(bboxes, pad_info)

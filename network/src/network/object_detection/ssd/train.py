@@ -4,19 +4,18 @@ import os
 from pathlib import Path
 
 import torch
-import torch.distributed as dist
-
-from ssd.engine.inference import do_evaluation
-from ssd.config import cfg
-from ssd.data.build import make_data_loader
-from ssd.engine.trainer import do_train
-from ssd.modeling.detector import build_detection_model
-from ssd.solver.build import make_optimizer, make_lr_scheduler
-from ssd.utils import dist_util, mkdir
-from ssd.utils.checkpoint import CheckPointer
-from ssd.utils.dist_util import synchronize
-from ssd.utils.logger import setup_logger
-from ssd.utils.misc import str2bool
+# import torch.distributed as dist
+from network.object_detection.ssd.engine.inference import do_evaluation
+from network.object_detection.ssd.config import cfg
+from network.object_detection.ssd.data.build import make_data_loader, make_data_loader_denso
+from network.object_detection.ssd.engine.trainer import do_train
+from network.object_detection.ssd.modeling.detector import build_detection_model
+from network.object_detection.ssd.solver.build import make_optimizer, make_lr_scheduler
+from network.object_detection.ssd.utils import dist_util, mkdir
+from network.object_detection.ssd.utils.checkpoint import CheckPointer
+from network.object_detection.ssd.utils.dist_util import synchronize
+from network.object_detection.ssd.utils.logger import setup_logger
+from network.object_detection.ssd.utils.misc import str2bool
 
 
 def train(cfg, args):
@@ -40,7 +39,8 @@ def train(cfg, args):
     arguments.update(extra_checkpoint_data)
 
     max_iter = cfg.SOLVER.MAX_ITER // args.num_gpus
-    train_loader = make_data_loader(cfg, is_train=True, distributed=args.distributed, max_iter=max_iter, start_iter=arguments['iteration'])
+    # train_loader = make_data_loader(cfg, is_train=True, distributed=args.distributed, max_iter=max_iter, start_iter=arguments['iteration'])
+    train_loader = make_data_loader_denso(cfg, args, is_train=True, distributed=args.distributed, max_iter=max_iter, start_iter=arguments['iteration'])
 
     model = do_train(cfg, model, train_loader, optimizer, scheduler, checkpointer, device, arguments, args)
     return model
@@ -55,12 +55,13 @@ def main():
         help="path to config file",
         type=str,
     )
+    parser.add_argument("--dataset_dir", type=Path)
     parser.add_argument("--weights", type=Path)
     parser.add_argument("--checkpoints", type=Path)
     parser.add_argument("--local_rank", type=int, default=0)
     parser.add_argument('--log_step', default=10, type=int, help='Print logs every log_step')
     parser.add_argument('--save_step', default=2500, type=int, help='Save checkpoint every save_step')
-    parser.add_argument('--eval_step', default=2500, type=int, help='Evaluate dataset every eval_step, disabled when eval_step < 0')
+    parser.add_argument('--eval_step', default=-1, type=int, help='Evaluate dataset every eval_step, disabled when eval_step < 0')
     parser.add_argument('--use_tensorboard', default=True, type=str2bool)
     parser.add_argument(
         "--skip-test",

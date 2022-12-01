@@ -1,16 +1,16 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
-from ssd.layers import L2Norm
-from ssd.modeling import registry
-from ssd.utils.model_zoo import load_state_dict_from_url
+from network.object_detection.ssd.layers import L2Norm
+from network.object_detection.ssd.modeling import registry
+from network.object_detection.ssd.utils.model_zoo import load_state_dict_from_url
 
 model_urls = {
     'vgg': 'https://s3.amazonaws.com/amdegroot-models/vgg16_reducedfc.pth',
 }
 
 
-# borrowed from https://github.com/amdegroot/ssd.pytorch/blob/master/ssd.py
+# borrowed from https://github.com/amdegroot/network.object_detection.ssd.pytorch/blob/master/network.object_detection.ssd.py
 def add_vgg(cfg, batch_norm=False):
     layers = []
     in_channels = 3

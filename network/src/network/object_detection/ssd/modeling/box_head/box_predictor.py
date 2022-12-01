@@ -1,8 +1,8 @@
 import torch
 from torch import nn
 
-from ssd.layers import SeparableConv2d
-from ssd.modeling import registry
+from network.object_detection.ssd.layers import SeparableConv2d
+from network.object_detection.ssd.modeling import registry
 
 
 class BoxPredictor(nn.Module):

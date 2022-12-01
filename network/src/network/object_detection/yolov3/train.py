@@ -52,7 +52,7 @@ if __name__=='__main__':
         help="interval between saving checkpoints",
     )
     args = parser.parse_args()
-    time_str = util.get_time_str()
+    time_str = util.get_timestr_hms()
     with open(args.config_path) as f:
         config_object = yaml.safe_load(f)
     img_size = config_object["train"]["img_size"]

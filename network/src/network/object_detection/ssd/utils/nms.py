@@ -4,11 +4,14 @@ import warnings
 import torch
 import torchvision
 
-if torchvision.__version__ >= '0.3.0':
-    _nms = torchvision.ops.nms
-else:
-    warnings.warn('No NMS is available. Please upgrade torchvision to 0.3.0+')
-    sys.exit(-1)
+print(torchvision.__version__)
+print(torchvision.ops.nms)
+# if torchvision.__version__ >= '0.3.0':
+#     _nms = torchvision.ops.nms
+# else:
+#     warnings.warn('No NMS is available. Please upgrade torchvision to 0.3.0+')
+#     sys.exit(-1)
+_nms = torchvision.ops.nms
 
 
 def nms(boxes, scores, nms_thresh):
