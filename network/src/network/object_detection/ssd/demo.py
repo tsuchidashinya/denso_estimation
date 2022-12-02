@@ -40,7 +40,6 @@ def run_demo(cfg, args, ckpt, score_threshold, images_dir, output_dir, dataset_t
 
     cpu_device = torch.device("cpu")
     transforms = build_transforms(cfg, is_train=False)
-    print('ou')
     model.eval()
     for i, image_path in enumerate(image_paths):
         start = time.time()
