@@ -80,7 +80,7 @@ void EstimationClient::acc_main(int index)
     accuracy_srv.request.estimation_cloud = final_cloud;
     accuracy_srv.request.instance = 1;
     accuracy_srv.request.ground_truth_cloud = cloud_data;
-    accuracy_srv.request.ground_truth_cloud.cloud_name = "acc" + std::to_string(index);
+    accuracy_srv.request.ground_truth_cloud.tf_name = "acc" + std::to_string(index);
     ros::WallTime start = ros::WallTime::now();
     Util::client_request(accuracy_client_, accuracy_srv, accuracy_service_name_);
     ros::WallTime end = ros::WallTime::now();

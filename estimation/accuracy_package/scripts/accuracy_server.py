@@ -13,7 +13,7 @@ class AccuracyServer:
         self.accuracy_iou_service_name = rospy.get_param("~accuracy_iou_service_name", "accuracy_iou_service")
     
     def accuracy_iou_service_callback(self, request):
-        print(request.ground_truth_cloud.cloud_name)
+        print(request.ground_truth_cloud.object_name)
         np_gt_cloud = util_msg_data.msgcloud_to_npcloud(request.ground_truth_cloud)
         esti_cloud = util_msg_data.extract_ins_cloud_msg(request.estimation_cloud, request.instance)
         np_esti_cloud = util_msg_data.msgcloud_to_npcloud(esti_cloud)
