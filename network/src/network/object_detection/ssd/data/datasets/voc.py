@@ -190,20 +190,24 @@ class VOCDatasetDenso(torch.utils.data.Dataset):
     def _get_annotation_denso(self, image_id):
         image_id = util.exclude_ext_str(image_id)
         annotation_file_path = os.path.join(self.data_dir, "labels", "%s.txt" % image_id)
-        lines = open(annotation_file_path).read().splitlines()
-        boxes = []
-        labels = []
-        is_difficult = []
-        for line in lines:
-            class_name, *coords = line.split()
-            coords = list(map(float, coords))
-            x1, y1, x2, y2 = coords
-            boxes.append([x1, y1, x2, y2])
-            labels.append(self.class_dict[class_name])
-            is_difficult.append(0)
-        return (np.array(boxes, dtype=np.float32),
-                np.array(labels, dtype=np.int64),
-                np.array(is_difficult, dtype=np.uint8))
+        if os.path.exists(annotation_file_path):
+            lines = open(annotation_file_path).read().splitlines()
+            boxes = []
+            labels = []
+            is_difficult = []
+            for line in lines:
+                class_name, *coords = line.split()
+                coords = list(map(float, coords))
+                x1, y1, x2, y2 = coords
+                boxes.append([x1, y1, x2, y2])
+                labels.append(self.class_dict[class_name])
+                is_difficult.append(0)
+            return (np.array(boxes, dtype=np.float32),
+                    np.array(labels, dtype=np.int64),
+                    np.array(is_difficult, dtype=np.uint8))
+        else:
+            print(annotation_file_path)
+        
 
 
     def get_img_info(self, index):
