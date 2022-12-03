@@ -5,13 +5,13 @@ from pathlib import Path
 import torch
 import torch.utils.data
 
-from ssd.config import cfg
-from ssd.engine.inference import do_evaluation, do_evaluation_denso
-from ssd.modeling.detector import build_detection_model
-from ssd.utils import dist_util
-from ssd.utils.checkpoint import CheckPointer
-from ssd.utils.dist_util import synchronize
-from ssd.utils.logger import setup_logger
+from network.object_detection.ssd.config import cfg
+from network.object_detection.ssd.engine.inference import do_evaluation, do_evaluation_denso
+from network.object_detection.ssd.modeling.detector import build_detection_model
+from network.object_detection.ssd.utils import dist_util
+from network.object_detection.ssd.utils.checkpoint import CheckPointer
+from network.object_detection.ssd.utils.dist_util import synchronize
+from network.object_detection.ssd.utils.logger import setup_logger
 
 
 def evaluation(cfg, args, ckpt, distributed):
