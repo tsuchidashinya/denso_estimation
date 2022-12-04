@@ -16,6 +16,23 @@ from network.object_detection.ssd.modeling.detector import build_detection_model
 from network.object_detection.ssd.utils import mkdir
 from network.object_detection.ssd.utils.checkpoint import CheckPointer
 
+def load_checkpoints(model, checkpoint_dir, checkpoint_file):
+    checkpointer = CheckPointer(model, save_dir=checkpoint_dir)
+    checkpointer.load(checkpoint_file, use_latest=checkpoint_file is None)
+    return model
+
+def load_config(config_path):
+    cfg.merge_from_file(config_path)
+    cfg.freeze()
+    return cfg
+
+def create_model(config, device):
+    model = build_detection_model(config)
+    model = model.to(device=device).eval()
+    return model
+
+def object_detection(input_data, model, config, device):
+    pass
 
 @torch.no_grad()
 def run_demo(cfg, args, ckpt, score_threshold, images_dir, output_dir, dataset_type):
