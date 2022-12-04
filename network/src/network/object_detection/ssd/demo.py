@@ -16,23 +16,57 @@ from network.object_detection.ssd.modeling.detector import build_detection_model
 from network.object_detection.ssd.utils import mkdir
 from network.object_detection.ssd.utils.checkpoint import CheckPointer
 
-def load_checkpoints(model, checkpoint_dir, checkpoint_file):
-    checkpointer = CheckPointer(model, save_dir=checkpoint_dir)
-    checkpointer.load(checkpoint_file, use_latest=checkpoint_file is None)
-    return model
 
-def load_config(config_path):
-    cfg.merge_from_file(config_path)
-    cfg.freeze()
-    return cfg
+class SSDEstimation:
+    def __init__(self):
+        transforms = build_transforms(cfg, is_train=False)
+    
+    def setting_network(self, config_path, checkpoint_path, score_threshold):
+        self.config = SSDEstimation.load_config(config_path)
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.model = SSDEstimation.create_model(self.config, self.device)
+        self.model = SSDEstimation.load_checkpoints(self.model, checkpoint_path)
+        self.transform = build_transforms(self.config, is_train=False)
+        self.cpu_device = torch.device("cpu")
+        self.score_threshold = score_threshold
 
-def create_model(config, device):
-    model = build_detection_model(config)
-    model = model.to(device=device).eval()
-    return model
+    @staticmethod
+    def load_checkpoints(model, checkpoint_dir):
+        checkpointer = CheckPointer(model, save_dir=checkpoint_dir)
+        checkpointer.load(use_latest=True)
+        return model
+    
+    @staticmethod
+    def load_config(config_path):
+        cfg.merge_from_file(config_path)
+        cfg.freeze()
+        return cfg
 
-def object_detection(input_data, model, config, device):
-    pass
+    @staticmethod
+    def create_model(config, device):
+        model = build_detection_model(config)
+        model = model.to(device=device).eval()
+        return model
+
+    @staticmethod
+    def get_class_names():
+        return VOCDatasetDenso.class_names
+
+    def draw_box(self):
+
+
+    @torch.no_grad()
+    def object_detection(self, image, score_threshold):
+        transforms = build_transforms(cfg, is_train=False)
+        height, width = image.shape[:2]
+        images = transforms(image)[0].unsqueeze(0)
+        result = self.model(images.to(self.device))[0]
+        result = result.resize((width, height)).to(self.cpu_device).numpy()
+        boxes, labels, scores = result['boxes'], result['labels'], result['scores']
+        indices = scores > score_threshold
+        boxes = boxes[indices]
+        labels = labels[indices]
+        scores = scores[indices]
 
 @torch.no_grad()
 def run_demo(cfg, args, ckpt, score_threshold, images_dir, output_dir, dataset_type):
