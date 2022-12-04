@@ -19,13 +19,13 @@ from network.object_detection.ssd.utils.checkpoint import CheckPointer
 
 class SSDEstimation:
     def __init__(self):
-        transforms = build_transforms(cfg, is_train=False)
+        pass
     
-    def setting_network(self, config_path, checkpoint_path, score_threshold):
+    def setting_network(self, config_path, checkpoint_dir, score_threshold, device):
         self.config = SSDEstimation.load_config(config_path)
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = device
         self.model = SSDEstimation.create_model(self.config, self.device)
-        self.model = SSDEstimation.load_checkpoints(self.model, checkpoint_path)
+        self.model = SSDEstimation.load_checkpoints(self.model, checkpoint_dir)
         self.transform = build_transforms(self.config, is_train=False)
         self.cpu_device = torch.device("cpu")
         self.score_threshold = score_threshold
@@ -52,8 +52,10 @@ class SSDEstimation:
     def get_class_names():
         return VOCDatasetDenso.class_names
 
-    def draw_box(self):
-
+    @staticmethod
+    def draw_b_box(image, boxes, labels, scores, class_names):
+        drawn_image = draw_boxes(image, boxes, labels, scores, class_names).astype(np.uint8)
+        return drawn_image
 
     @torch.no_grad()
     def object_detection(self, image, score_threshold):
@@ -67,6 +69,7 @@ class SSDEstimation:
         boxes = boxes[indices]
         labels = labels[indices]
         scores = scores[indices]
+        return boxes, labels, scores
 
 @torch.no_grad()
 def run_demo(cfg, args, ckpt, score_threshold, images_dir, output_dir, dataset_type):
