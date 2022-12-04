@@ -11,3 +11,8 @@ network_server:
     # checkpoints: /home/ericlab/tsuchida/2022_11/checkpoints/SemSeg/semantic_11_23/180.pth
     checkpoints: /home/ericlab/Downloads/semseg_latest_net.pth
     # checkpoints: /home/ericlab/tsuchida/2022_11/checkpoints/SemSeg/semantic_segmentation/ishiyama/PointNet_Segmentation/honban_11_15_13_39_21/latest_net.pth
+  ssd:
+    config_path: 
+    checkpoints_dir: 
+    threshold: 0.6
+  object_detect_mode: ssd
