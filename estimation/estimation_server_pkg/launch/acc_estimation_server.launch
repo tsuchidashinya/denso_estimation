@@ -1,12 +1,22 @@
 <?xml version="1.0"?>
 <launch>
+    <arg name="sim_or_real" default="sim"/>
+    
     <node pkg="visualize_package" type="visualize_server" name="visualize_server" output="screen">
         <rosparam file="$(find visualize_package)/config/visualize_server.yaml" command="load" />
         <rosparam file="$(find annotation_common)/config/common_parameter.yaml" command="load" />
     </node>
-    <node pkg="hdf5_package" type="hdf5_open_server.py" name="hdf5_open_server" output="screen">
-        <rosparam file="$(find estimation_server_pkg)/config/hdf5_open_server_acc.yaml" command="load" ns="" />
-    </node>
+
+    <group if="$(eval sim_or_real=='sim')">
+        <node pkg="hdf5_package" type="hdf5_open_server.py" name="hdf5_open_server" output="screen">
+            <rosparam file="$(find estimation_server_pkg)/config/hdf5_open_server_acc.yaml" command="load" ns="" />
+        </node>
+    </group>
+    <group if="$(eval sim_or_real=='real')">
+        <node pkg="hdf5_package" type="hdf5_open_server.py" name="hdf5_open_server" output="screen">
+            <rosparam file="$(find estimation_server_pkg)/config/hdf5_open_server_acc_real.yaml" command="load" ns="" />
+        </node>
+    </group>
 
     <node pkg="network_server_pkg" type="network_server.py" name="network_server" output="screen">
         <rosparam file="$(find network_server_pkg)/config/network_server.yaml" command="load" ns="" />

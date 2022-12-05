@@ -1,0 +1,5 @@
+hdf5_open_server:
+  hdf5_open_service_name: hdf5_open_service
+  hdf5_real_phoxi_open_service_name: hdf5_real_phoxi_open_service
+  hdf5_segmentation_service_name: hdf5_segmentation_service
+  hdf5_file_path: /home/ericlab/Downloads/photone_real_data.hdf5
