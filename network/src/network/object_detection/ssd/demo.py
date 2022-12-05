@@ -8,6 +8,7 @@ from vizer.draw import draw_boxes
 
 from network.object_detection.ssd.config import cfg
 from network.object_detection.ssd.data.datasets import COCODataset, VOCDataset, VOCDatasetDenso
+from util import util
 import argparse
 import numpy as np
 
@@ -23,19 +24,21 @@ class SSDEstimation:
     def __init__(self):
         pass
     
-    def setting_network(self, config_path, checkpoint_dir, score_threshold, device):
+    def setting_network(self, config_path, checkpoint_file, score_threshold, device):
         self.config = SSDEstimation.load_config(config_path)
         self.device = device
         self.model = SSDEstimation.create_model(self.config, self.device)
-        self.model = SSDEstimation.load_checkpoints(self.model, checkpoint_dir)
+        check_dir, check_file = util.devide_dir_and_file(checkpoint_file)
+        self.model = SSDEstimation.load_checkpoints(self.model, check_dir, check_file)
         self.transform = build_transforms(self.config, is_train=False)
         self.cpu_device = torch.device("cpu")
         self.score_threshold = score_threshold
 
     @staticmethod
-    def load_checkpoints(model, checkpoint_dir):
+    def load_checkpoints(model, checkpoint_dir, checkpoint_file):
         checkpointer = CheckPointer(model, save_dir=checkpoint_dir)
-        checkpointer.load(use_latest=True)
+        path = os.path.join(checkpoint_dir, checkpoint_file)
+        checkpointer.load(path, use_latest=False)
         return model
     
     @staticmethod

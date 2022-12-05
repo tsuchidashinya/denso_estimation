@@ -17,7 +17,7 @@ bool AccuracyServer::accuracy_service_callback(common_srvs::AccuracyIouService::
 {
     common_msgs::CloudData gt_cloud = request.ground_truth_cloud;
     common_msgs::CloudData esti_cloud = request.estimation_cloud;
-    esti_cloud = UtilMsgData::extract_ins_cloudmsg(esti_cloud, 0);
+    esti_cloud = UtilMsgData::extract_ins_cloudmsg(esti_cloud, request.instance);
     Util::message_show("esti_cloud_size", esti_cloud.x.size());
     common_msgs::CloudData gt_parts;
     // Util::message_show("", request.ground_truth_cloud.cloud_name);
