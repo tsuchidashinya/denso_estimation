@@ -16,6 +16,8 @@ from network.object_detection.ssd.modeling.detector import build_detection_model
 from network.object_detection.ssd.utils import mkdir
 from network.object_detection.ssd.utils.checkpoint import CheckPointer
 
+from common_msgs.msg import BoxPosition
+
 
 class SSDEstimation:
     def __init__(self):
@@ -70,6 +72,18 @@ class SSDEstimation:
         labels = labels[indices]
         scores = scores[indices]
         return boxes, labels, scores
+    
+    @staticmethod
+    def get_box_position(boxes):
+        box_pos_list = []
+        for i in range(boxes.shape[0]):
+            box_pos = BoxPosition()
+            box_pos.x_one = boxes[i][0]
+            box_pos.y_one = boxes[i][1]
+            box_pos.x_two = boxes[i][2]
+            box_pos.y_two = boxes[i][3]
+            box_pos_list.append(box_pos)
+        return box_pos_list
 
 @torch.no_grad()
 def run_demo(cfg, args, ckpt, score_threshold, images_dir, output_dir, dataset_type):

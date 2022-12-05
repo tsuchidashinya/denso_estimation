@@ -1,6 +1,7 @@
 import torch
 from torch.utils.data import DataLoader
 from torch.utils.data.dataloader import default_collate
+from torch.utils.data import RandomSampler
 
 from network.object_detection.ssd.data import samplers
 from network.object_detection.ssd.data.datasets import build_dataset, build_dataset_denso
@@ -53,7 +54,7 @@ def make_data_loader(cfg, is_train=True, distributed=False, max_iter=None, start
         data_loader = DataLoader(dataset, num_workers=cfg.DATA_LOADER.NUM_WORKERS, batch_sampler=batch_sampler,
                                  pin_memory=cfg.DATA_LOADER.PIN_MEMORY, collate_fn=BatchCollator(is_train))
         data_loaders.append(data_loader)
-
+    
     if is_train:
         # during training, a single (possibly concatenated) data_loader is returned
         assert len(data_loaders) == 1

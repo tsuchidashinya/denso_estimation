@@ -50,8 +50,9 @@ class NetworkServer:
             boxes_pos = yolo_run.get_box_info(detection, img.shape[0], img.shape[1])
         elif self.object_detect_mode == "ssd":
             boxes, _, _ = self.ssd_network.object_detection(img, self.ssd_score_threshold)
+        
         response = ObjectDetectionServiceResponse()
-        response.b_boxs = boxes_pos
+        response.b_boxs = SSDEstimation.get_box_position(boxes)
         return response
     
     def network_cloud_callback(self, request):

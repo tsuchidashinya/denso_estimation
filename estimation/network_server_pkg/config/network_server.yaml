@@ -12,7 +12,7 @@ network_server:
     checkpoints: /home/ericlab/Downloads/semseg_latest_net.pth
     # checkpoints: /home/ericlab/tsuchida/2022_11/checkpoints/SemSeg/semantic_segmentation/ishiyama/PointNet_Segmentation/honban_11_15_13_39_21/latest_net.pth
   ssd:
-    config_path: 
-    checkpoints_dir: 
-    threshold: 0.6
+    config_path: /home/ericlab/tsuchida/ros_package/study_ws/src/denso_estimation/network/src/network/object_detection/ssd/config/yaml/vgg_ssd512_voc0712.yaml
+    checkpoints_dir: /home/ericlab/tsuchida/2022_11/checkpoints/SSD/retry_1000
+    threshold: 0.8
   object_detect_mode: ssd

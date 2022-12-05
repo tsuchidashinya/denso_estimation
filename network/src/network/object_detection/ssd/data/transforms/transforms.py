@@ -69,12 +69,14 @@ class Compose(object):
 
     def __init__(self, transforms):
         self.transforms = transforms
+        self.counter = 0
 
     def __call__(self, img, boxes=None, labels=None):
         for t in self.transforms:
             img, boxes, labels = t(img, boxes, labels)
             if boxes is not None:
                 boxes, labels = remove_empty_boxes(boxes, labels)
+        self.counter = self.counter + 1
         return img, boxes, labels
 
 

@@ -202,7 +202,8 @@ class VOCDatasetDenso(torch.utils.data.Dataset):
         # size = anno.find("size")
         # im_info = tuple(map(int, (size.find("height").text, size.find("width").text)))
         # return {"height": im_info[0], "width": im_info[1]}
-        return {"height": 1544, "width": 2064}
+        # return {"height": 1544, "width": 2064}
+        return {"height": 618, "width": 826}
 
     def _read_image(self, image_id):
         image_id = util.exclude_ext_str(image_id)
