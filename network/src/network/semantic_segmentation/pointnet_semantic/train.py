@@ -63,6 +63,7 @@ if __name__ == '__main__':
             x_data, y_data = x_data.to(device), y_data.to(device)
             net.train()
             optimizer.zero_grad()
+            # print(y_data.shape)
             pred, trans_feat = net(x_data)
             loss = criterion(pred, y_data, trans_feat)
             loss.backward()
@@ -77,11 +78,11 @@ if __name__ == '__main__':
             print("saving the model at the end of epoch %d, iter %d" % (epoch, total_steps))
             save_file = os.path.join(args.checkpoints, str(epoch) + ".pth")
             torch.save(net.state_dict(), save_file)
-
-    plt.plot(plot_x, loss_plot_y)
-    plt.grid()
-    plot_file = os.path.join(args.checkpoints, "/loss_plot.png")
-    plt.savefig(plot_file)
-    print(plot_file)
+            save_file_latest = os.path.join(args.checkpoints, "latest.pth")
+            torch.save(net.state_dict(), save_file_latest)
+    save_file = os.path.join(args.checkpoints, str(epoch) + ".pth")
+    torch.save(net.state_dict(), save_file)
+    save_file_latest = os.path.join(args.checkpoints, "latest.pth")
+    torch.save(net.state_dict(), save_file_latest)
     
 

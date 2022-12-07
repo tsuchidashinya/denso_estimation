@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 python3 /home/ericlab/tsuchida/ros_package/study_ws/src/denso_estimation/network/src/network/semantic_segmentation/pointnet_semantic/train.py \
---dataset_path //home/ericlab/tsuchida/2022_11/annotation/segmentation/multi_object_randomize/temp/saikou.hdf5 \
---checkpoints /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/multi_object_2000 \
+--dataset_path /home/ericlab/tsuchida/2022_12/annotation/Semseg/multi_object_kai/kai3228/kai_1.hdf5 \
+--checkpoints /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/multi_object_kai_2000 \
 --batch_size 1 \
 --num_epoch 200 \
 --save_epoch_freq 20 \
