@@ -60,7 +60,6 @@
   <depend>gazebo_model_package</depend>
   <depend>tf_package</depend>
   <depend>data_transform_pkg</depend>
-  <depend>anno_srvs</depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
