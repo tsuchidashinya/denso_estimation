@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-    <node pkg="estimation_client_pkg" type="estimation_client_real_sensor_hdf5" name="estimation_client_real_sensor_hdf5" output="screen">
-        <rosparam file="$(find estimation_client_pkg)/config/estimation_client_real_sensor_hdf5.yaml" command="load" ns="" />
-    </node>
-</launch>

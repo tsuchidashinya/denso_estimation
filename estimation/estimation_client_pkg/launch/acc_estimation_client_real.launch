@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-    <node pkg="estimation_client_pkg" type="acc_estimation_client" name="acc_estimation_client" output="screen">
-        <rosparam file="$(find estimation_client_pkg)/config/acc_estimation_client_real.yaml" command="load" ns="" />
-    </node>
-</launch>
