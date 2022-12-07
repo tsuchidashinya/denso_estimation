@@ -39,6 +39,9 @@ void EstimationClient::acc_main(int index)
         else {
             cloud_data = UtilMsgData::change_ins_cloudmsg(cloud_data, i, 1);
         }
+        if (index > 2 && i > 2) {
+            cloud_data = UtilMsgData::change_ins_cloudmsg(cloud_data, i, 1);
+        }
     }
     common_srvs::ObjectDetectionService ob_detect_2d_srv;
     ob_detect_2d_srv.request.input_image = hdf5_srv.response.image;
