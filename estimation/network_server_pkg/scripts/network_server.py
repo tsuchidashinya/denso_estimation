@@ -34,10 +34,10 @@ class NetworkServer:
     
     def network_initialize(self):
         self.device = yolo_run.get_device()
-        # self.yolo_config_object = yolo_run.load_config(self.yolo_config_path)
-        # self.yolo_class_list = yolo_run.get_class_names(self.yolo_config_path)
-        # self.yolo_net = yolo_run.create_model(self.yolo_config_object, self.device)
-        # self.yolo_net = yolo_run.load_checkpoints(self.yolo_net, self.yolo_checkpoints, self.device)
+        self.yolo_config_object = yolo_run.load_config(self.yolo_config_path)
+        self.yolo_class_list = yolo_run.get_class_names(self.yolo_config_path)
+        self.yolo_net = yolo_run.create_model(self.yolo_config_object, self.device)
+        self.yolo_net = yolo_run.load_checkpoints(self.yolo_net, self.yolo_checkpoints, self.device)
         self.ssd_network = SSDEstimation()
         self.ssd_network.setting_network(self.ssd_config_path, self.ssd_checkpoints_file, self.ssd_score_threshold, self.device)
         self.semantic_net = semantic_run.create_model(self.semantic_class_num, self.device)
@@ -45,15 +45,16 @@ class NetworkServer:
         
     def object_detect_callback(self, request):
         img = util_msg_data.rosimg_to_npimg(request.input_image)
+        response = ObjectDetectionServiceResponse()
         if self.object_detect_mode == "yolo":
-            # detection = yolo_run.object_detection(img, self.yolo_net, self.yolo_config_object, self.device, self.yolo_class_list)
-            # boxes_pos = yolo_run.get_box_info(detection, img.shape[0], img.shape[1])
-            pass
+            detection = yolo_run.object_detection(img, self.yolo_net, self.yolo_config_object, self.device, self.yolo_class_list)
+            boxes_pos = yolo_run.get_box_info(detection, img.shape[0], img.shape[1])
+            response.b_boxs = boxes_pos
+            
         elif self.object_detect_mode == "ssd":
             boxes, _, _ = self.ssd_network.object_detection(img, self.ssd_score_threshold)
+            response.b_boxs = SSDEstimation.get_box_position(boxes)
         
-        response = ObjectDetectionServiceResponse()
-        response.b_boxs = SSDEstimation.get_box_position(boxes)
         return response
     
     def network_cloud_callback(self, request):
