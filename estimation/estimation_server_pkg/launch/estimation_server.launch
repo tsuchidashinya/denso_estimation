@@ -12,7 +12,7 @@
     <group if="$(eval sim_or_real=='real')">
         <group if="$(arg hdf5_file_use)">
             <node pkg="hdf5_package" type="hdf5_open_server.py" name="hdf5_open_server" output="screen">
-                <rosparam file="$(find estimation_server_pkg)/config/hdf5_open_server_real.yaml" command="load" ns="" />
+                <rosparam file="$(find estimation_server_pkg)/config/estimation_server_hdf5.yaml" command="load" ns="" />
             </node>
         </group>
         <group unless="$(arg hdf5_file_use)">
