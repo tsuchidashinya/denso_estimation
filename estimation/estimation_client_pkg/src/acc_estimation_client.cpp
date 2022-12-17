@@ -63,13 +63,13 @@ void EstimationClient::acc_main(int index)
     sensor_msgs::Image out_img = UtilMsgData::cvimg_to_rosimg(draw_img, "bgr8");
     common_srvs::VisualizeImage vis_img_srv;
     vis_img_srv.request.image_list.push_back(out_img);
-    vis_img_srv.request.topic_name_list.push_back("hdf5_image");
+    vis_img_srv.request.topic_name_list.push_back("hdf5_image_" + std::to_string(index));
     Util::client_request(vis_image_client_, vis_img_srv, vis_image_service_name_);
     // visualize_srv.request.cloud_data_list = semantic_srv.response.output_data_multi;
     // for (int i = 0; i < semantic_srv.response.output_data_multi.size(); i++) {
     //     visualize_srv.request.topic_name_list.push_back("cloud_multi_" + std::to_string(i));
     // }
-    common_msgs::CloudData final_cloud;
+    common_msgs::CloudData final_cloud, final_color_cloud;
     for (int i = 0; i < semantic_srv.response.output_data_multi.size(); i++) {
         visualize_srv.request.cloud_data_list.push_back(semantic_srv.response.output_data_multi[i]);
         visualize_srv.request.topic_name_list.push_back("cloud_multi_" + std::to_string(index) + "_" + std::to_string(i));
@@ -77,6 +77,11 @@ void EstimationClient::acc_main(int index)
     }
     visualize_srv.request.cloud_data_list.push_back(final_cloud);
     visualize_srv.request.topic_name_list.push_back("final_cloud_" + std::to_string(index));
+    final_color_cloud = UtilMsgData::extract_ins_cloudmsg(final_cloud, 1);
+    visualize_srv.request.cloud_data_list.push_back(final_color_cloud);
+    visualize_srv.request.topic_name_list.push_back("final_cloud_color_" + std::to_string(index));
+    visualize_srv.request.cloud_data_list.push_back(hdf5_srv.response.cloud_data);
+    visualize_srv.request.topic_name_list.push_back("sensor_data_" + std::to_string(index));
     Util::client_request(visualize_client_, visualize_srv, visualize_service_name_);
 
     common_srvs::AccuracyIouService accuracy_srv;
