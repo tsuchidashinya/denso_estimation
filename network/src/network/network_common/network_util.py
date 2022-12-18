@@ -10,7 +10,7 @@ def print_current_losses(phase, epoch, losses):
 
 def DivideTrainValDataset(dataset):
     n_samples = len(dataset)
-    train_size = int(n_samples * 0.95)
+    train_size = int(n_samples * 1)
     train_dataset_indices = list(range(0, train_size))
     val_dataset_indices = list(range(train_size, n_samples))
     train_dataset = Subset(dataset, train_dataset_indices)
