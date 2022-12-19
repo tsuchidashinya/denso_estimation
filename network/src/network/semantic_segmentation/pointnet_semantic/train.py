@@ -16,6 +16,7 @@ if __name__ == '__main__':
     print("------------------current main directory------------------")
     print(__file__)
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('--weights')
     parser.add_argument('--dataset_path', help='Dataset root directory path')
     parser.add_argument('--batch_size', default=4, type=int, help='Batch size for training')
     parser.add_argument('--cuda', default=True, type=str2bool, help='Use CUDA to train model')
@@ -44,6 +45,10 @@ if __name__ == '__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     net = POINTNET_SEMANTIC.PointNetSemantic(args.num_instance_classes)
     net = net.to(device)
+    state = torch.load(args.weights) if args.weights else None
+    if state:
+        net.load_state_dict(state)
+    
     optimizer = torch.optim.Adam(
         net.parameters(), lr=args.lr)
     criterion = semantic_loss.SemanticLoss()
