@@ -6,8 +6,8 @@ acc_estimation_main:
   accuracy_service_name: accuracy_iou_service
   hdf5_service_name: hdf5_open_acc_service
   the_number_of_execute: 2
-  hdf5_open_file_path: /home/ericlab/tsuchida/2022_11/annotation/Acc/ano_execute_1124102624.hdf5
-
+  hdf5_open_file_path: /home/ericlab/Downloads/acc_real.hdf5
+  
 decide_object_position:
   sensor_name: phoxi_camera
   sensor_angle_max: 0.087
@@ -20,10 +20,10 @@ decide_object_position:
   radious: 0.05
 
 data_transform_pkg:
-  f_scale: 0.968
-  cx_scale: 1.02
-  cy_scale: 1.0
-  
+  f_scale: 0.5
+  cx_scale: 0.99
+  cy_scale: 0.9
+
 data_3D_to_2D:
   radious_x: 0.05
   radious_y: 0.05

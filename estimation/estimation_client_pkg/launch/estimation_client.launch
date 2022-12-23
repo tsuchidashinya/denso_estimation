@@ -1,14 +1,31 @@
 <?xml version="1.0"?>
 <launch>
     <arg name="sim_or_real" default="sim"/>
-    <group if="$(eval sim_or_real=='sim')">
-        <node pkg="estimation_client_pkg" type="estimation_client" name="estimation_client" output="screen">
-            <rosparam file="$(find estimation_client_pkg)/config/estimation_client.yaml" command="load" ns="" />
-        </node>
+    <arg name="hdf5_use" default="false"/>
+    
+    <group if="$(arg hdf5_use)">
+        <group if="$(eval sim_or_real=='sim')">
+            <node pkg="estimation_client_pkg" type="estimation_client_use_hdf5" name="estimation_client" output="screen">
+                <rosparam file="$(find estimation_client_pkg)/config/estimation_client_hdf5_sim.yaml" command="load" ns="" />
+            </node>
+        </group>
+        <group if="$(eval sim_or_real=='real')">
+            <node pkg="estimation_client_pkg" type="estimation_client_use_hdf5" name="estimation_client_real_sensor_hdf5" output="screen">
+                <rosparam file="$(find estimation_client_pkg)/config/estimation_client_hdf5_real.yaml" command="load" ns="" />
+            </node>
+        </group>
     </group>
-    <group if="$(eval sim_or_real=='real')">
-        <node pkg="estimation_client_pkg" type="estimation_client_real_sensor_hdf5" name="estimation_client_real_sensor_hdf5" output="screen">
-            <rosparam file="$(find estimation_client_pkg)/config/estimation_client_real_sensor_hdf5.yaml" command="load" ns="" />
-        </node>
+    <group unless="$(arg hdf5_use)">
+        <group if="$(eval sim_or_real=='sim')">
+            <node pkg="estimation_client_pkg" type="estimation_client" name="estimation_client" output="screen">
+                <rosparam file="$(find estimation_client_pkg)/config/estimation_client_sim.yaml" command="load" ns="" />
+            </node>
+        </group>
+        <group if="$(eval sim_or_real=='real')">
+            <node pkg="estimation_client_pkg" type="estimation_client" name="estimation_client_real_sensor_hdf5" output="screen">
+                <rosparam file="$(find estimation_client_pkg)/config/estimation_client_real.yaml" command="load" ns="" />
+            </node>
+        </group>
     </group>
+    
 </launch>

@@ -1,5 +1,0 @@
-hdf5_open_server:
-  hdf5_open_service_name: hdf5_open_service
-  hdf5_real_phoxi_open_service_name: hdf5_real_phoxi_open_service
-  hdf5_segmentation_service_name: hdf5_segmentation_service
-  hdf5_open_file_path: /home/ericlab/Downloads/real_data_1.hdf5

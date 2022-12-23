@@ -3,7 +3,7 @@
     <arg name="sim_or_real" default="sim"/>
     <group if="$(eval sim_or_real=='sim')">
         <node pkg="estimation_client_pkg" type="acc_estimation_client" name="acc_estimation_client" output="screen">
-            <rosparam file="$(find estimation_client_pkg)/config/acc_estimation_client.yaml" command="load" ns="" />
+            <rosparam file="$(find estimation_client_pkg)/config/acc_estimation_client_sim.yaml" command="load" ns="" />
         </node>
     </group>
     <group if="$(eval sim_or_real=='real')">

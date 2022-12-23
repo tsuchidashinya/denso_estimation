@@ -10,7 +10,7 @@ pnh_("~")
     cloud_network_client_ = nh_.serviceClient<common_srvs::SemanticSegmentationService>(cloud_network_service_name_);
     visualize_client_ = nh_.serviceClient<common_srvs::VisualizeCloud>(visualize_service_name_);
     accuracy_client_ = nh_.serviceClient<common_srvs::AccuracyIouService>(accuracy_service_name_);
-    hdf5_client_ = nh_.serviceClient<common_srvs::Hdf5OpenService>(hdf5_service_name_);
+    hdf5_client_ = nh_.serviceClient<common_srvs::Hdf5OpenAccService>(hdf5_service_name_);
 }
 
 void EstimationClient::set_paramenter()

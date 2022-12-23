@@ -4,8 +4,10 @@ acc_estimation_main:
   object_detect_service_name: object_detect_service
   cloud_network_service_name: network_semantic_service
   accuracy_service_name: accuracy_service
-  hdf5_service_name: hdf5_real_phoxi_open_service
+  hdf5_service_name: hdf5_open_sensor_data_service
   the_number_of_execute: 20
+  hdf5_open_file_path: /home/ericlab/Downloads/acc_real.hdf5
+  
 decide_object_position:
   sensor_name: phoxi_camera
   sensor_angle_max: 0.087

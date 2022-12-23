@@ -3,9 +3,9 @@ estimation_main:
   sensor_service_name: sensor_service
   object_detect_service_name: object_detect_service
   cloud_network_service_name: network_semantic_service
-  accuracy_service_name: accuracy_service
   hdf5_service_name: hdf5_service
   the_number_of_execute: 100
+  
 decide_object_position:
   sensor_name: phoxi_camera
   sensor_angle_max: 0.087
@@ -18,9 +18,9 @@ decide_object_position:
   radious: 0.05
 
 data_transform_pkg:
-  f_scale: 0.5
-  cx_scale: 0.99
-  cy_scale: 0.9
+  f_scale: 0.968
+  cx_scale: 1.02
+  cy_scale: 1.0
 
 data_3D_to_2D:
   radious_x: 0.05

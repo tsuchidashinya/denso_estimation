@@ -1,5 +1,0 @@
-hdf5_open_server:
-  hdf5_open_service_name: hdf5_open_service
-  hdf5_real_phoxi_open_service_name: hdf5_real_phoxi_open_service
-  hdf5_open_file_path: /home/ericlab/tsuchida/2022_11/annotation/Acc/ano_execute_1124102624.hdf5
-  hdf5_segmentation_service_name: hdf5_segmentation_service

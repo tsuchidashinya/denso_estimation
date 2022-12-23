@@ -10,7 +10,7 @@ pnh_("~")
     visualize_client_ = nh_.serviceClient<common_srvs::VisualizeCloud>(visualize_service_name_);
     vis_image_client_ = nh_.serviceClient<common_srvs::VisualizeImage>(vis_image_service_name_);
     accuracy_client_ = nh_.serviceClient<common_srvs::AccuracyIouService>(accuracy_service_name_);
-    hdf5_client_ = nh_.serviceClient<common_srvs::Hdf5OpenRealPhoxiService>(hdf5_service_name_);
+    hdf5_client_ = nh_.serviceClient<common_srvs::Hdf5OpenSensorDataService>(hdf5_service_name_);
 }
 
 void EstimationClient::set_paramenter()
@@ -23,12 +23,14 @@ void EstimationClient::set_paramenter()
     accuracy_service_name_ = static_cast<std::string>(param_list["accuracy_service_name"]);
     hdf5_service_name_ = static_cast<std::string>(param_list["hdf5_service_name"]);
     the_number_of_execute_ = param_list["the_number_of_execute"];
+    hdf5_open_file_path_ = static_cast<std::string>(param_list["hdf5_open_file_path"]);
 }
 
 void EstimationClient::acc_main(int index)
 {
-    common_srvs::Hdf5OpenRealPhoxiService hdf5_srv;
+    common_srvs::Hdf5OpenSensorDataService hdf5_srv;
     hdf5_srv.request.index = index;
+    hdf5_srv.request.hdf5_open_file_path = hdf5_open_file_path_;
     Util::client_request(hdf5_client_, hdf5_srv, hdf5_service_name_);
     sensor_msgs::Image image = hdf5_srv.response.image;
     common_msgs::CloudData cloud_data = hdf5_srv.response.cloud_data;

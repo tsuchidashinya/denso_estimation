@@ -5,8 +5,8 @@
 #include <common_srvs/SemanticSegmentationService.h>
 #include <common_srvs/ObjectDetectionService.h>
 #include <common_srvs/AccuracyIouService.h>
-#include <common_srvs/Hdf5OpenService.h>
-#include <common_srvs/Hdf5OpenRealPhoxiService.h>
+#include <common_srvs/Hdf5OpenAccService.h>
+#include <common_srvs/Hdf5OpenSensorDataService.h>
 #include <gazebo_model_package/decide_object_position.hpp>
 #include <gazebo_model_package/gazebo_model_move.hpp>
 #include <tf_package/tf_function.hpp>
@@ -33,6 +33,7 @@ private:
     cloud_network_client_, accuracy_client_, hdf5_client_, vis_image_client_;
     std::string sensor_service_name_, object_detect_service_name_, visualize_service_name_,
     cloud_network_service_name_, accuracy_service_name_, hdf5_service_name_, vis_image_service_name_;
+    std::string hdf5_open_file_path_;
     std::string world_frame_, sensor_frame_;
     TfFunction tf_func_;
     UtilMsgData util_msg_data_;
