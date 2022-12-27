@@ -27,17 +27,16 @@ void EstimationClient::set_paramenter()
 
 void EstimationClient::main()
 {
-    DecidePosition decide_gazebo_object;
     GazeboMoveServer gazebo_model_move(nh_);
     std::vector<common_msgs::ObjectInfo> multi_object;
     for (int i = 0; i < 10; i++) {
         common_msgs::ObjectInfo object;
-        object = decide_gazebo_object.make_object_info(i, "HV8");
+        object = decide_gazebo_object_.make_object_info(i, "HV8");
         multi_object.push_back(object);
     }
-    multi_object = decide_gazebo_object.get_remove_position(multi_object);
+    multi_object = decide_gazebo_object_.get_remove_position(multi_object);
     gazebo_model_move.set_multi_gazebo_model(multi_object);
-    multi_object = decide_gazebo_object.get_randam_place_position(multi_object);
+    multi_object = decide_gazebo_object_.get_randam_place_position(multi_object);
     gazebo_model_move.set_multi_gazebo_model(multi_object);
     ros::Duration(0.5).sleep();
 

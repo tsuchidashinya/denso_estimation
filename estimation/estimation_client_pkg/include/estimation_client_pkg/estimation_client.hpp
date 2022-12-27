@@ -37,4 +37,5 @@ private:
     std::string world_frame_, sensor_frame_;
     TfFunction tf_func_;
     UtilMsgData util_msg_data_;
+    DecidePosition decide_gazebo_object_;
 };
