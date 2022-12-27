@@ -13,7 +13,7 @@ network_server:
     # checkpoints: /home/ericlab/Downloads/semseg_latest_net.pth
     # checkpoints: /home/ericlab/tsuchida/2022_11/checkpoints/SemSeg/semantic_segmentation/ishiyama/PointNet_Segmentation/honban_11_15_13_39_21/latest_net.pth
     # checkpoints: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/multi_object_sensor_ramdomize_2000/latest.pth
-    # checkpoints: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/multi_object_kai_2000/latest.pth
+    # checkpoints: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/multi_object_2000/latest.pth
     # checkpoints: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/no_sensor_kai/latest.pth
     # checkpoints: /home/ericlab/Downloads/sensor_b_box/latest.pth
     # checkpoints: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/no_b_box/latest.pth
