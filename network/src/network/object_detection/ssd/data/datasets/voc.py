@@ -114,7 +114,7 @@ class VOCDataset(torch.utils.data.Dataset):
 
 class VOCDatasetDenso(torch.utils.data.Dataset):
     class_names = ('__background__',
-                   'HV8_occuluder')
+                   'HV8')
 
     def __init__(self, data_dir, transform=None, target_transform=None, keep_difficult=False):
         """Dataset for VOC data.
