@@ -26,4 +26,9 @@
     <node pkg="network_server_pkg" type="network_server.py" name="network_server" output="screen">
         <rosparam file="$(find network_server_pkg)/config/network_server.yaml" command="load" ns="" />
     </node>
+    <arg name="accuracy_iou_service_name" default="accuracy_iou_service"/>
+    
+    <node pkg="accuracy_package" type="accuracy_server" name="accuracy_server">
+        <param name="accuracy_iou_service_name" value="$(arg accuracy_iou_service_name)"/>
+    </node>
 </launch>

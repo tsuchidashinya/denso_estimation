@@ -35,6 +35,7 @@ private:
     cloud_network_service_name_, accuracy_service_name_, hdf5_service_name_, vis_image_service_name_;
     std::string hdf5_open_file_path_;
     std::string world_frame_, sensor_frame_;
+    int counter_;
     TfFunction tf_func_;
     UtilMsgData util_msg_data_;
     DecidePosition decide_gazebo_object_;

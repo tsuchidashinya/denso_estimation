@@ -24,11 +24,12 @@ network_server:
     # checkpoints: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/実験1/data_7000/40.pth
     # checkpoints: /home/ericlab/Downloads/data_1000/latest.pth
     # checkpoints: /home/ericlab/Downloads/data_3000/latest.pth
-    checkpoints: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/実験1/data_5000_start/latest.pth
+    # checkpoints: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/実験1/data_5000_start/latest.pth
     # checkpoints: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/実験1/data_4000/latest.pth
+    checkpoints: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/sensor_b_box_2000_noize/latest.pth
   ssd:
     config_path: /home/ericlab/tsuchida/ros_package/study_ws/src/denso_estimation/network/src/network/object_detection/ssd/config/yaml/vgg_ssd512_voc0712.yaml
     # checkpoints_file_path: /home/ericlab/tsuchida/2022_11/checkpoints/SSD/ishiyama/model_final.pth
-    checkpoints_file_path: /home/ericlab/tsuchida/2022_12/checkpoints/SSD/latest_method/model_005000.pth
-    threshold: 0.92
+    checkpoints_file_path: /home/ericlab/tsuchida/2022_12/checkpoints/SSD/full_randomize/HV8/model_005000.pth
+    threshold: 0.9
   object_detect_mode: ssd

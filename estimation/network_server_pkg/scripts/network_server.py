@@ -34,10 +34,10 @@ class NetworkServer:
     
     def network_initialize(self):
         self.device = yolo_run.get_device()
-        self.yolo_config_object = yolo_run.load_config(self.yolo_config_path)
-        self.yolo_class_list = yolo_run.get_class_names(self.yolo_config_path)
-        self.yolo_net = yolo_run.create_model(self.yolo_config_object, self.device)
-        self.yolo_net = yolo_run.load_checkpoints(self.yolo_net, self.yolo_checkpoints, self.device)
+        # self.yolo_config_object = yolo_run.load_config(self.yolo_config_path)
+        # self.yolo_class_list = yolo_run.get_class_names(self.yolo_config_path)
+        # self.yolo_net = yolo_run.create_model(self.yolo_config_object, self.device)
+        # self.yolo_net = yolo_run.load_checkpoints(self.yolo_net, self.yolo_checkpoints, self.device)
         self.ssd_network = SSDEstimation()
         self.ssd_network.setting_network(self.ssd_config_path, self.ssd_checkpoints_file, self.ssd_score_threshold, self.device)
         self.semantic_net = semantic_run.create_model(self.semantic_class_num, self.device)

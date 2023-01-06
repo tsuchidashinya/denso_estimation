@@ -6,7 +6,7 @@ acc_estimation_main:
   accuracy_service_name: accuracy_iou_service
   hdf5_service_name: hdf5_open_acc_service
   the_number_of_execute: 2
-  hdf5_open_file_path: /home/ericlab/tsuchida/2022_11/annotation/Acc/ano_execute_1124102624.hdf5
+  hdf5_open_file_path: /media/ericlab/DE59-9C00/test_annotation/acc_real.hdf5
 
 decide_object_position:
   sensor_name: phoxi_camera
