@@ -22,7 +22,6 @@ class EstimationClient
 public:
     EstimationClient(ros::NodeHandle &);
     void main();
-    void acc_main(int);
     void set_paramenter();
     XmlRpc::XmlRpcValue param_list;
     int the_number_of_execute_;
@@ -34,9 +33,11 @@ private:
     std::string sensor_service_name_, object_detect_service_name_, visualize_service_name_,
     cloud_network_service_name_, accuracy_service_name_, hdf5_service_name_, vis_image_service_name_;
     std::string hdf5_open_file_path_;
+    std::string ssd_checkpoint_path_, semantic_checkpoint_path_;
     std::string world_frame_, sensor_frame_;
     int counter_;
     TfFunction tf_func_;
     UtilMsgData util_msg_data_;
     DecidePosition decide_gazebo_object_;
+    std::string estimation_name_;
 };
