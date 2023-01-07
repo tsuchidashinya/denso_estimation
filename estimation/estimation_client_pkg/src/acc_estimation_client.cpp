@@ -3,7 +3,8 @@
 EstimationClient::EstimationClient(ros::NodeHandle &nh) :
 nh_(nh),
 pnh_("~"),
-counter_(0)
+counter_(0),
+estimation_name_("esti")
 {
     set_paramenter();
     object_detect_client_ = nh_.serviceClient<common_srvs::ObjectDetectionService>(object_detect_service_name_);
@@ -23,8 +24,10 @@ void EstimationClient::set_paramenter()
     cloud_network_service_name_ = static_cast<std::string>(param_list["cloud_network_service_name"]);
     accuracy_service_name_ = static_cast<std::string>(param_list["accuracy_service_name"]);
     hdf5_service_name_ = static_cast<std::string>(param_list["hdf5_service_name"]);
-    the_number_of_execute_ = param_list["the_number_of_execute"];
     hdf5_open_file_path_ = static_cast<std::string>(param_list["hdf5_open_file_path"]);
+    ssd_checkpoint_path_ = static_cast<std::string>(param_list["ssd_checkpoint_path"]);
+    semantic_checkpoint_path_ = static_cast<std::string>(param_list["semantic_checkpoint_path"]);
+    estimation_name_ = static_cast<std::string>(param_list["estimation_name"]);
 }
 
 void EstimationClient::main()
@@ -52,6 +55,7 @@ void EstimationClient::main()
         }
         common_srvs::ObjectDetectionService ob_detect_2d_srv;
         ob_detect_2d_srv.request.input_image = hdf5_srv.response.image;
+        ob_detect_2d_srv.request.checkpoints_path = ssd_checkpoint_path_;
         Util::client_request(object_detect_client_, ob_detect_2d_srv, object_detect_service_name_);
         std::vector<common_msgs::BoxPosition> box_pos = ob_detect_2d_srv.response.b_boxs;
         std::vector<float> cinfo_list = hdf5_srv.response.camera_info;
@@ -60,6 +64,7 @@ void EstimationClient::main()
         std::vector<common_msgs::CloudData> cloud_multi = get3d.get_out_data(cloud_data, box_pos);
         common_srvs::SemanticSegmentationService semantic_srv;
         semantic_srv.request.input_data_multi = cloud_multi;
+        semantic_srv.request.checkpoints_path = semantic_checkpoint_path_;
         Util::client_request(cloud_network_client_, semantic_srv, cloud_network_service_name_);
 
         common_srvs::VisualizeCloud visualize_srv;
@@ -70,7 +75,7 @@ void EstimationClient::main()
         sensor_msgs::Image out_img = UtilMsgData::cvimg_to_rosimg(draw_img, "bgr8");
         common_srvs::VisualizeImage vis_img_srv;
         vis_img_srv.request.image_list.push_back(out_img);
-        vis_img_srv.request.topic_name_list.push_back("hdf5_image_" + std::to_string(counter_));
+        vis_img_srv.request.topic_name_list.push_back(estimation_name_ + "_" + "hdf5_image_" + std::to_string(counter_));
         Util::client_request(vis_image_client_, vis_img_srv, vis_image_service_name_);
         // visualize_srv.request.cloud_data_list = semantic_srv.response.output_data_multi;
         // for (int i = 0; i < semantic_srv.response.output_data_multi.size(); i++) {
@@ -79,16 +84,16 @@ void EstimationClient::main()
         common_msgs::CloudData final_cloud, final_color_cloud;
         for (int i = 0; i < semantic_srv.response.output_data_multi.size(); i++) {
             visualize_srv.request.cloud_data_list.push_back(semantic_srv.response.output_data_multi[i]);
-            visualize_srv.request.topic_name_list.push_back("cloud_multi_" + std::to_string(counter_) + "_" + std::to_string(i));
+            visualize_srv.request.topic_name_list.push_back(estimation_name_ + "_" + "cloud_multi_" + std::to_string(counter_) + "_" + std::to_string(i));
             final_cloud = UtilMsgData::concat_cloudmsg(final_cloud, semantic_srv.response.output_data_multi[i]);
         }
         visualize_srv.request.cloud_data_list.push_back(final_cloud);
-        visualize_srv.request.topic_name_list.push_back("final_cloud_" + std::to_string(counter_));
+        visualize_srv.request.topic_name_list.push_back(estimation_name_ + "_" + "final_cloud_" + std::to_string(counter_));
         final_color_cloud = UtilMsgData::extract_ins_cloudmsg(final_cloud, 1);
         visualize_srv.request.cloud_data_list.push_back(final_color_cloud);
-        visualize_srv.request.topic_name_list.push_back("final_cloud_color_" + std::to_string(counter_));
+        visualize_srv.request.topic_name_list.push_back(estimation_name_ + "_" + "final_cloud_color_" + std::to_string(counter_));
         visualize_srv.request.cloud_data_list.push_back(hdf5_srv.response.cloud_data);
-        visualize_srv.request.topic_name_list.push_back("sensor_data_" + std::to_string(counter_));
+        visualize_srv.request.topic_name_list.push_back(estimation_name_ + "_" + "sensor_data_" + std::to_string(counter_));
         Util::client_request(visualize_client_, visualize_srv, visualize_service_name_);
 
         common_srvs::AccuracyIouService accuracy_srv;

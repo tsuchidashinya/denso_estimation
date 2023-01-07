@@ -5,6 +5,8 @@ estimation_main:
   cloud_network_service_name: network_semantic_service
   hdf5_service_name: hdf5_service
   the_number_of_execute: 100
+  ssd_checkpoint_path: /home/ericlab/tsuchida/2022_12/checkpoints/SSD/full_randomize/HV8/model_005000.pth
+  semantic_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/sensor_b_box_2000_noize/latest.pth
   
 decide_object_position:
   sensor_name: phoxi_camera
