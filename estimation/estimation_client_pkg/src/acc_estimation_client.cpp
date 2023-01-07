@@ -32,24 +32,21 @@ void EstimationClient::set_paramenter()
 
 void EstimationClient::main()
 {
+    float iou_final = 0;
+    int iou_counter = 0;
     while (1) {
         common_srvs::Hdf5OpenAccService hdf5_srv;
         hdf5_srv.request.index = counter_;
         hdf5_srv.request.hdf5_open_file_path = hdf5_open_file_path_;
         Util::client_request(hdf5_client_, hdf5_srv, hdf5_service_name_);
-        if (counter_ >= hdf5_srv.response.data_size - 1) {
-            break;
-        }
+        
         sensor_msgs::Image image = hdf5_srv.response.image;
         common_msgs::CloudData cloud_data = hdf5_srv.response.cloud_data;
-        for (int i = 2; i < 6; i++) {
+        for (int i = 2; i < 8; i++) {
             if (counter_ == 1 && (i == 3 || i == 5 || i == 4)) {
                 cloud_data = UtilMsgData::change_ins_cloudmsg(cloud_data, i, 0);
             }
             else {
-                cloud_data = UtilMsgData::change_ins_cloudmsg(cloud_data, i, 1);
-            }
-            if (counter_ > 1 && i > 2) {
                 cloud_data = UtilMsgData::change_ins_cloudmsg(cloud_data, i, 1);
             }
         }
@@ -84,28 +81,44 @@ void EstimationClient::main()
         common_msgs::CloudData final_cloud, final_color_cloud;
         for (int i = 0; i < semantic_srv.response.output_data_multi.size(); i++) {
             visualize_srv.request.cloud_data_list.push_back(semantic_srv.response.output_data_multi[i]);
-            visualize_srv.request.topic_name_list.push_back(estimation_name_ + "_" + "cloud_multi_" + std::to_string(counter_) + "_" + std::to_string(i));
+            visualize_srv.request.topic_name_list.push_back(estimation_name_ + "_" + std::to_string(counter_) + "_" + std::to_string(i));
             final_cloud = UtilMsgData::concat_cloudmsg(final_cloud, semantic_srv.response.output_data_multi[i]);
         }
         visualize_srv.request.cloud_data_list.push_back(final_cloud);
         visualize_srv.request.topic_name_list.push_back(estimation_name_ + "_" + "final_cloud_" + std::to_string(counter_));
         final_color_cloud = UtilMsgData::extract_ins_cloudmsg(final_cloud, 1);
         visualize_srv.request.cloud_data_list.push_back(final_color_cloud);
-        visualize_srv.request.topic_name_list.push_back(estimation_name_ + "_" + "final_cloud_color_" + std::to_string(counter_));
+        visualize_srv.request.topic_name_list.push_back(estimation_name_ + "_" + "all_color_" + std::to_string(counter_));
         visualize_srv.request.cloud_data_list.push_back(hdf5_srv.response.cloud_data);
         visualize_srv.request.topic_name_list.push_back(estimation_name_ + "_" + "sensor_data_" + std::to_string(counter_));
         Util::client_request(visualize_client_, visualize_srv, visualize_service_name_);
 
-        common_srvs::AccuracyIouService accuracy_srv;
-        accuracy_srv.request.estimation_cloud = final_cloud;
-        accuracy_srv.request.instance = 1;
-        accuracy_srv.request.ground_truth_cloud = cloud_data;
-        accuracy_srv.request.ground_truth_cloud.tf_name = "acc" + std::to_string(counter_);
-        ros::WallTime start = ros::WallTime::now();
-        Util::client_request(accuracy_client_, accuracy_srv, accuracy_service_name_);
-        ros::WallTime end = ros::WallTime::now();
-        std::string time_str = std::to_string((end - start).toSec());
-        Util::message_show("time: " + time_str + "  iou", accuracy_srv.response.iou_result);
+        for (int i = 0; i < semantic_srv.response.output_data_multi.size(); i++) {
+            common_srvs::AccuracyIouService accuracy_srv;
+            accuracy_srv.request.estimation_cloud = semantic_srv.response.output_data_multi[i];
+            accuracy_srv.request.instance = 1;
+            accuracy_srv.request.ground_truth_cloud = cloud_data;
+            accuracy_srv.request.ground_truth_cloud.tf_name = "acc" + std::to_string(counter_);
+            Util::client_request(accuracy_client_, accuracy_srv, accuracy_service_name_);
+            Util::message_show("iou", accuracy_srv.response.iou_result);
+            iou_final += accuracy_srv.response.iou_result;
+            iou_counter++;
+        }
+        // common_srvs::AccuracyIouService accuracy_srv;
+        // accuracy_srv.request.estimation_cloud = final_cloud;
+        // accuracy_srv.request.instance = 1;
+        // accuracy_srv.request.ground_truth_cloud = cloud_data;
+        // accuracy_srv.request.ground_truth_cloud.tf_name = "acc" + std::to_string(counter_);
+        // ros::WallTime start = ros::WallTime::now();
+        // Util::client_request(accuracy_client_, accuracy_srv, accuracy_service_name_);
+        // ros::WallTime end = ros::WallTime::now();
+        // std::string time_str = std::to_string((end - start).toSec());
+        // Util::message_show("time: " + time_str + "  iou", accuracy_srv.response.iou_result);
+        if (counter_ >= hdf5_srv.response.data_size - 2) {
+            Util::message_show("iou_final", iou_final / iou_counter);
+            Util::message_show("iou_coutner", iou_counter);
+            break;
+        }
         counter_++;
     }
 }

@@ -73,10 +73,10 @@ if __name__ == '__main__':
             loss = criterion(pred, y_data, trans_feat)
             loss.backward()
             optimizer.step()
-            train_loss += loss
-            loss_plot_y.append(loss)
-            count = count + 1
-            plot_x.append(count)
+            # train_loss += loss
+            # loss_plot_y.append(loss)
+            # count = count + 1
+            # plot_x.append(count)
             network_util.print_current_losses("train", epoch, loss)
 
         if epoch % args.save_epoch_freq == 0:

@@ -13,6 +13,8 @@ from network.network_common import network_util
 class NetworkServer:
     def __init__(self):
         self.set_parameter()
+        self.object_detection_initialize()
+        self.semantic_initialize()
         rospy.Service(self.object_detect_service_name, ObjectDetectionService, self.object_detect_callback)
         rospy.Service(self.network_cloud_service_name, NetworkCloudService, self.network_cloud_callback)
         rospy.Service(self.network_semantic_service_name, SemanticSegmentationService, self.network_semantic_callback)
@@ -45,7 +47,7 @@ class NetworkServer:
         self.semantic_net = semantic_run.load_checkpoints(self.semantic_net, self.semantic_checkpoints, self.device)
         
     def object_detect_callback(self, request):
-        if self.ssd_checkpoints_file != request.checkpoints_path and request.checkpoints_path is not None:
+        if self.ssd_checkpoints_file != request.checkpoints_path and request.checkpoints_path != "":
             self.ssd_checkpoints_file = request.checkpoints_path
             self.object_detection_initialize()
         img = util_msg_data.rosimg_to_npimg(request.input_image)
@@ -69,7 +71,7 @@ class NetworkServer:
     
     def network_semantic_callback(self, request):
         # request = SemanticSegmentationServiceRequest()
-        if self.semantic_checkpoints != request.checkpoints_path and request.checkpoints_path is not None:
+        if self.semantic_checkpoints != request.checkpoints_path and request.checkpoints_path != "":
             self.semantic_checkpoints = request.checkpoints_path
             self.semantic_initialize()
         out_list = []
