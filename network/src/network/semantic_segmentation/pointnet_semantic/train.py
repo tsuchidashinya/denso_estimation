@@ -61,7 +61,7 @@ if __name__ == '__main__':
     for epoch in range(args.num_epoch):
         train_loss = 0.0
         for i, data in enumerate(train_dataloader):
-            total_steps += args.batch_size
+            # total_steps += args.batch_size
             x_data = torch.from_numpy(data["x_data"].astype(np.float32))
             y_data = torch.from_numpy(data["y_data"].astype(np.float32))
             x_data = x_data.transpose(2, 1)
@@ -80,7 +80,9 @@ if __name__ == '__main__':
             network_util.print_current_losses("train", epoch, loss)
 
         if epoch % args.save_epoch_freq == 0:
-            print("saving the model at the end of epoch %d, iter %d" % (epoch, total_steps))
+            print("saving the model at the end of epoch %d" % (epoch))
+            if not os.path.exists(args.checkpoints):
+                os.mkdir(args.checkpoints)
             save_file = os.path.join(args.checkpoints, str(epoch) + ".pth")
             torch.save(net.state_dict(), save_file)
             save_file_latest = os.path.join(args.checkpoints, "latest.pth")
