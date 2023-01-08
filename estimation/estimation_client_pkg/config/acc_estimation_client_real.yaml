@@ -13,6 +13,7 @@ acc_estimation_main:
   # semantic_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/sensor_b_box_3000_noize_not_board/latest.pth
   # semantic_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/sensor_b_box_2000_max_noize/latest.pth
   semantic_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/sensor_b_box_2000_noize_max_improve/latest.pth
+  semantic_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/sensor_b_box_2000_noize_improve_box/latest.pth
 
 decide_object_position:
   sensor_name: phoxi_camera
