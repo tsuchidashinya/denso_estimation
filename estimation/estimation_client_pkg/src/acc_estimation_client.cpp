@@ -42,14 +42,14 @@ void EstimationClient::main()
         
         sensor_msgs::Image image = hdf5_srv.response.image;
         common_msgs::CloudData cloud_data = hdf5_srv.response.cloud_data;
-        for (int i = 2; i < 8; i++) {
-            if (counter_ == 1 && (i == 3 || i == 5 || i == 4)) {
-                cloud_data = UtilMsgData::change_ins_cloudmsg(cloud_data, i, 0);
-            }
-            else {
-                cloud_data = UtilMsgData::change_ins_cloudmsg(cloud_data, i, 1);
-            }
-        }
+        // for (int i = 2; i < 8; i++) {
+        //     if (counter_ == 1 && (i == 3 || i == 5 || i == 4)) {
+        //         cloud_data = UtilMsgData::change_ins_cloudmsg(cloud_data, i, 0);
+        //     }
+        //     else {
+        //         cloud_data = UtilMsgData::change_ins_cloudmsg(cloud_data, i, 1);
+        //     }
+        // }
         common_srvs::ObjectDetectionService ob_detect_2d_srv;
         ob_detect_2d_srv.request.input_image = hdf5_srv.response.image;
         ob_detect_2d_srv.request.checkpoints_path = ssd_checkpoint_path_;
