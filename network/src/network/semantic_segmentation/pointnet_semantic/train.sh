@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 python3 /home/ericlab/tsuchida/ros_package/study_ws/src/denso_estimation/network/src/network/semantic_segmentation/pointnet_semantic/train.py \
---dataset_path /home/ericlab/tsuchida/2023_01/annotation/Semseg/HV8/data_2000/sensor_b_box_noize_2000.hdf5 \
---checkpoints /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/sensor_b_box_2000_super_noize_kai \
+--dataset_path /home/ericlab/tsuchida/2023_01/annotation/Semseg/HV8/data_5000/5000_propose.hdf5 \
+--checkpoints /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/5000_propose \
 --batch_size 1 \
 --num_epoch 200 \
 --save_epoch_freq 20 \
