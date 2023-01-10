@@ -21,5 +21,4 @@ class SSDTargetTransform:
                                                 self.corner_form_priors, self.iou_threshold)
         boxes = box_utils.corner_form_to_center_form(boxes)
         locations = box_utils.convert_boxes_to_locations(boxes, self.center_form_priors, self.center_variance, self.size_variance)
-       
         return locations, labels

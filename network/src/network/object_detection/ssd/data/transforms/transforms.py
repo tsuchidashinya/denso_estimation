@@ -368,6 +368,11 @@ class Expand(object):
         image = expand_image
 
         boxes = boxes.copy()
+        # print(boxes)
+        # print(left)
+        # print(top)
+        # print(boxes.shape)
+
         boxes[:, :2] += (int(left), int(top))
         boxes[:, 2:] += (int(left), int(top))
 

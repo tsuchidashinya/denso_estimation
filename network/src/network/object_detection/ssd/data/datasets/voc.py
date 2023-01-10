@@ -5,6 +5,8 @@ import xml.etree.ElementTree as ET
 from PIL import Image
 from util import util
 from network.object_detection.ssd.structures.container import Container
+from tqdm import tqdm
+import time
 
 
 class VOCDataset(torch.utils.data.Dataset):
@@ -114,7 +116,7 @@ class VOCDataset(torch.utils.data.Dataset):
 
 class VOCDatasetDenso(torch.utils.data.Dataset):
     class_names = ('__background__',
-                   't_pipe')
+                   'HV8')
 
     def __init__(self, data_dir, transform=None, target_transform=None, keep_difficult=False):
         """Dataset for VOC data.
@@ -128,13 +130,15 @@ class VOCDatasetDenso(torch.utils.data.Dataset):
         # image_sets_file = os.path.join(self.data_dir, "ImageSets", "Main", "%s.txt" % self.split)
         image_sets_dir = os.path.join(self.data_dir, "images")
         # self.ids = VOCDataset._read_image_ids(image_sets_file)
-        self.ids = VOCDataset._read_image_list(image_sets_dir)
+        # self.ids = VOCDatasetDenso._read_image_list(image_sets_dir)
+        self.ids = VOCDatasetDenso._real_image_list_from_file(image_sets_dir)
         self.keep_difficult = keep_difficult
 
         self.class_dict = {class_name: i for i, class_name in enumerate(self.class_names)}
 
     def __getitem__(self, index):
         image_id = self.ids[index]
+        # print(image_id)
         boxes, labels, is_difficult = self._get_annotation_denso(image_id)
         if not self.keep_difficult:
             boxes = boxes[is_difficult == 0]
@@ -161,11 +165,17 @@ class VOCDatasetDenso(torch.utils.data.Dataset):
 
     @staticmethod
     def _read_image_list(image_sets_dir):
-        # ids = []
-        # with open(image_sets_file) as f:
-        #     for line in f:
-        #         ids.append(line.rstrip())
         ids = os.listdir(image_sets_dir)
+        return ids
+
+    @staticmethod
+    def _real_image_list_from_file(image_sets_dir):
+        list_path = os.path.join(image_sets_dir, "../train.txt")
+        ids = []
+        files = open(list_path).read().splitlines()
+        for i in tqdm(range(len(files))):
+            ids.append(files[i])
+            time.sleep(0.001)
         return ids
 
     
@@ -185,6 +195,8 @@ class VOCDatasetDenso(torch.utils.data.Dataset):
                 boxes.append([x1, y1, x2, y2])
                 labels.append(self.class_dict[class_name])
                 is_difficult.append(0)
+            if len(boxes) == 0:
+                print(image_id)
             return (np.array(boxes, dtype=np.float32),
                     np.array(labels, dtype=np.int64),
                     np.array(is_difficult, dtype=np.uint8))
