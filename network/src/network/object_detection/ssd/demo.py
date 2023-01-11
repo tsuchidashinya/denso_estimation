@@ -169,17 +169,17 @@ def main():
         nargs=argparse.REMAINDER,
     )
     args = parser.parse_args()
-    print(args)
+    # print(args)
 
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
     cfg.freeze()
 
-    print("Loaded configuration file {}".format(args.config_file))
-    with open(args.config_file, "r") as cf:
-        config_str = "\n" + cf.read()
-        print(config_str)
-    print("Running with config:\n{}".format(cfg))
+    # print("Loaded configuration file {}".format(args.config_file))
+    # with open(args.config_file, "r") as cf:
+    #     config_str = "\n" + cf.read()
+        # print(config_str)
+    # print("Running with config:\n{}".format(cfg))
 
     run_demo(cfg=cfg,
             args=args,

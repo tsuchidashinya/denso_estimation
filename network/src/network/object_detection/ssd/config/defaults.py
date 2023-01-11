@@ -6,7 +6,7 @@ _C.MODEL = CN()
 _C.MODEL.META_ARCHITECTURE = 'SSDDetector'
 _C.MODEL.DEVICE = "cuda"
 # match default boxes to any ground truth with jaccard overlap higher than a threshold (0.5)
-_C.MODEL.THRESHOLD = 0.5
+_C.MODEL.THRESHOLD = 0.9
 _C.MODEL.NUM_CLASSES = 21
 # Hard negative mining
 _C.MODEL.NEG_POS_RATIO = 3
@@ -87,8 +87,8 @@ _C.SOLVER.WARMUP_ITERS = 500
 # Specific test options
 # ---------------------------------------------------------------------------- #
 _C.TEST = CN()
-_C.TEST.NMS_THRESHOLD = 0.2
-_C.TEST.CONFIDENCE_THRESHOLD = 0.2
+_C.TEST.NMS_THRESHOLD = 0.7
+_C.TEST.CONFIDENCE_THRESHOLD = 0.7
 _C.TEST.MAX_PER_CLASS = -1
 _C.TEST.MAX_PER_IMAGE = 100
 _C.TEST.BATCH_SIZE = 10

@@ -60,6 +60,7 @@ class CheckPointer:
             return {}
 
         self.logger.info("Loading checkpoint from {}".format(f))
+        print("Loading checkpoint from {}".format(f))
         checkpoint = self._load_file(f)
         model = self.model
         if isinstance(model, DistributedDataParallel):

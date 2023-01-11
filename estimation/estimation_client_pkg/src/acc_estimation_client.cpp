@@ -30,10 +30,26 @@ void EstimationClient::set_paramenter()
     estimation_name_ = static_cast<std::string>(param_list["estimation_name"]);
 }
 
+int max_count(common_msgs::CloudData cloud)
+{
+    auto instance_dict = UtilMsgData::get_instance_dict(cloud);
+    // Util::print_map(instance_dict);
+    auto max_ins_num = 0, max_ins = 0;
+    for (auto iter = instance_dict.begin(); iter != instance_dict.end(); ++iter) {
+        if (iter->second > max_ins_num) {
+            max_ins = iter->first;
+            max_ins_num = iter->second;
+        }
+    }
+    // Util::message_show("max_instance", max_ins);
+    return max_ins;
+}
+
 void EstimationClient::main()
 {
     float iou_final = 0;
     int iou_counter = 0;
+    Util::message_show("checkpoint", semantic_checkpoint_path_);
     while (1) {
         common_srvs::Hdf5OpenAccService hdf5_srv;
         hdf5_srv.request.index = counter_;
@@ -82,6 +98,20 @@ void EstimationClient::main()
         for (int i = 0; i < semantic_srv.response.output_data_multi.size(); i++) {
             visualize_srv.request.cloud_data_list.push_back(semantic_srv.response.output_data_multi[i]);
             visualize_srv.request.topic_name_list.push_back(estimation_name_ + "_" + std::to_string(counter_) + "_" + std::to_string(i));
+            auto gt_parts = AccuracyUtil::extract_gt_parts(cloud_data, semantic_srv.response.output_data_multi[i]);
+            auto esti_cloud = UtilMsgData::extract_ins_cloudmsg(semantic_srv.response.output_data_multi[i], 1);
+            common_msgs::CloudData gt_ins_parts;
+            gt_ins_parts = AccuracyUtil::extract_gt_parts(gt_parts, esti_cloud);
+            auto gt_ins = max_count(gt_ins_parts);
+            auto instance_dict = UtilMsgData::get_instance_dict(gt_parts);
+            for (auto iter = instance_dict.begin(); iter != instance_dict.end(); ++iter) {
+                if (iter->first != gt_ins) {
+                    gt_parts = UtilMsgData::change_ins_cloudmsg(gt_parts, iter->first, 0);
+                }
+            }
+            gt_parts = UtilMsgData::change_ins_cloudmsg(gt_parts, gt_ins, 3);
+            visualize_srv.request.cloud_data_list.push_back(gt_parts);
+            visualize_srv.request.topic_name_list.push_back("ground_truth_" + std::to_string(counter_) + "_" + std::to_string(i));
             final_cloud = UtilMsgData::concat_cloudmsg(final_cloud, semantic_srv.response.output_data_multi[i]);
         }
         visualize_srv.request.cloud_data_list.push_back(final_cloud);
@@ -100,7 +130,7 @@ void EstimationClient::main()
             accuracy_srv.request.ground_truth_cloud = cloud_data;
             accuracy_srv.request.ground_truth_cloud.tf_name = "acc" + std::to_string(counter_);
             Util::client_request(accuracy_client_, accuracy_srv, accuracy_service_name_);
-            Util::message_show("iou", accuracy_srv.response.iou_result);
+            Util::message_show(estimation_name_ + "_" + std::to_string(counter_) + "_" + std::to_string(i) + " iou", accuracy_srv.response.iou_result);
             iou_final += accuracy_srv.response.iou_result;
             iou_counter++;
         }

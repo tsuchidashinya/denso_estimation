@@ -5,11 +5,15 @@ acc_estimation_main:
   cloud_network_service_name: network_semantic_service
   accuracy_service_name: accuracy_iou_service
   hdf5_service_name: hdf5_open_acc_service
-  hdf5_open_file_path: /home/ericlab/Downloads/acc_real_latest.hdf5
-  estimation_name: latest_max
-  ssd_checkpoint_path: /home/ericlab/tsuchida/2022_12/checkpoints/SSD/full_randomize/HV8/model_005000.pth
+  hdf5_open_file_path: /home/ericlab/tsuchida/test_data/acc_real_latest.hdf5
+  estimation_name: propose
+  # ssd_checkpoint_path: /home/ericlab/tsuchida/2022_12/checkpoints/SSD/full_randomize/HV8/model_005000.pth
+  ssd_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/SSD/HV8/full_randomizer_3000/model_004000.pth
+
   # semantic_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/sensor_b_box_2000_noize/latest.pth
   # semantic_checkpoint_path: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/sensor_b_box_para_kai_final/latest.pth
+  # semantic_checkpoint_path: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/no_sensor_kai/latest.pth
+  # semantic_checkpoint_path: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/no_b_box/latest.pth
   # semantic_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/sensor_b_box_3000_noize_not_board/latest.pth
   # semantic_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/sensor_b_box_2000_max_noize/latest.pth
   # semantic_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/sensor_b_box_2000_noize_max_improve/latest.pth
@@ -17,7 +21,7 @@ acc_estimation_main:
   # semantic_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/sensor_b_box_2000_super_noize_improve/latest.pth
   # semantic_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/sensor_b_box_7000_improve/latest.pth
   # semantic_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/sensor_b_box_3000_super_noize/latest.pth
-  # semantic_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/sensor_b_box_2000_super_noize_kai/160.pth
+  # semantic_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/sensor_b_box_2000_super_noize_kai/latest.pth
   # semantic_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/3000_super_noize/latest.pth
   semantic_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/4000_propose/latest.pth
   # semantic_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/5000_propose/latest.pth

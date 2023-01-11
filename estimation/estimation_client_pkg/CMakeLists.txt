@@ -17,6 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   gazebo_model_package
   tf_package
   data_transform_pkg
+  accuracy_package
 )
 
 
