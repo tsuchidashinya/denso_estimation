@@ -41,7 +41,8 @@ void EstimationClient::main()
         hdf5_srv.request.index = counter_;
         hdf5_srv.request.hdf5_open_file_path = hdf5_open_file_path_;
         Util::client_request(hdf5_client_, hdf5_srv, hdf5_service_name_);
-        
+        ros::WallTime start, end;
+        start = ros::WallTime::now();
         sensor_msgs::Image image = hdf5_srv.response.image;
         common_msgs::CloudData cloud_data = hdf5_srv.response.cloud_data;
         // for (int i = 2; i < 8; i++) {
@@ -74,7 +75,7 @@ void EstimationClient::main()
         semantic_srv.request.input_data_multi = cloud_multi;
         semantic_srv.request.checkpoints_path = semantic_checkpoint_path_;
         Util::client_request(cloud_network_client_, semantic_srv, cloud_network_service_name_);
-
+        end = ros::WallTime::now();
         common_srvs::VisualizeCloud visualize_srv;
         // visualize_srv.request.cloud_data_list.push_back(hdf5_srv.response.cloud_data);
         // visualize_srv.request.topic_name_list.push_back("hdf5_package");
@@ -125,7 +126,8 @@ void EstimationClient::main()
             accuracy_srv.request.ground_truth_cloud = cloud_data;
             accuracy_srv.request.ground_truth_cloud.tf_name = "acc" + std::to_string(counter_);
             Util::client_request(accuracy_client_, accuracy_srv, accuracy_service_name_);
-            Util::message_show(estimation_name_ + "_" + std::to_string(counter_) + "_" + std::to_string(i) + " iou", accuracy_srv.response.iou_result);
+            std::string time_str = std::to_string((end - start).toSec());
+            Util::message_show(estimation_name_ + "_" + std::to_string(counter_) + "_" + std::to_string(i) + " time " + time_str + " iou", accuracy_srv.response.iou_result);
             iou_final += accuracy_srv.response.iou_result;
             iou_counter++;
         }
