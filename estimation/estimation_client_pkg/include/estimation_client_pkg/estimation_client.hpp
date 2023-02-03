@@ -34,11 +34,13 @@ private:
     std::string sensor_service_name_, object_detect_service_name_, visualize_service_name_,
     cloud_network_service_name_, accuracy_service_name_, hdf5_service_name_, vis_image_service_name_;
     std::string hdf5_open_file_path_;
-    std::string ssd_checkpoint_path_, semantic_checkpoint_path_;
+    std::string object_detect_checkpoint_path_, semantic_checkpoint_path_;
+    std::string object_detect_mode_;
     std::string world_frame_, sensor_frame_;
     int counter_;
     TfFunction tf_func_;
     UtilMsgData util_msg_data_;
     DecidePosition decide_gazebo_object_;
     std::string estimation_name_;
+    int semantic_class_num_;
 };

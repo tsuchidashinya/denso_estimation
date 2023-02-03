@@ -18,38 +18,24 @@ estimation_name_("esti")
 void EstimationClient::set_paramenter()
 {
     pnh_.getParam("acc_estimation_main", param_list);
-    visualize_service_name_ = static_cast<std::string>(param_list["visualize_service_name"]);
-    vis_image_service_name_ = static_cast<std::string>(param_list["visualize_image_service_name"]);
-    object_detect_service_name_ = static_cast<std::string>(param_list["object_detect_service_name"]);
-    cloud_network_service_name_ = static_cast<std::string>(param_list["cloud_network_service_name"]);
-    accuracy_service_name_ = static_cast<std::string>(param_list["accuracy_service_name"]);
-    hdf5_service_name_ = static_cast<std::string>(param_list["hdf5_service_name"]);
+    visualize_service_name_ = "visualize_cloud_service";
+    vis_image_service_name_ = "visualize_image_service";
+    object_detect_service_name_ = "object_detect_service";
+    cloud_network_service_name_ = "network_semantic_service";
+    accuracy_service_name_ = "accuracy_iou_service";
+    hdf5_service_name_ = "hdf5_open_acc_service";
     hdf5_open_file_path_ = static_cast<std::string>(param_list["hdf5_open_file_path"]);
-    ssd_checkpoint_path_ = static_cast<std::string>(param_list["ssd_checkpoint_path"]);
+    object_detect_mode_ = static_cast<std::string>(param_list["object_detect_mode"]);
+    object_detect_checkpoint_path_ = static_cast<std::string>(param_list["object_detect_checkpoint_path"]);
+    semantic_class_num_ = static_cast<int>(param_list["semantic_class_num"]);
     semantic_checkpoint_path_ = static_cast<std::string>(param_list["semantic_checkpoint_path"]);
     estimation_name_ = static_cast<std::string>(param_list["estimation_name"]);
-}
-
-int max_count(common_msgs::CloudData cloud)
-{
-    auto instance_dict = UtilMsgData::get_instance_dict(cloud);
-    // Util::print_map(instance_dict);
-    auto max_ins_num = 0, max_ins = 0;
-    for (auto iter = instance_dict.begin(); iter != instance_dict.end(); ++iter) {
-        if (iter->second > max_ins_num) {
-            max_ins = iter->first;
-            max_ins_num = iter->second;
-        }
-    }
-    // Util::message_show("max_instance", max_ins);
-    return max_ins;
 }
 
 void EstimationClient::main()
 {
     float iou_final = 0;
     int iou_counter = 0;
-    Util::message_show("checkpoint", semantic_checkpoint_path_);
     while (1) {
         common_srvs::Hdf5OpenAccService hdf5_srv;
         hdf5_srv.request.index = counter_;
@@ -67,8 +53,12 @@ void EstimationClient::main()
         //     }
         // }
         common_srvs::ObjectDetectionService ob_detect_2d_srv;
+        if (counter_ == 0) 
+            ob_detect_2d_srv.request.reload = 1;
+        else 
+            ob_detect_2d_srv.request.reload = 0;
         ob_detect_2d_srv.request.input_image = hdf5_srv.response.image;
-        ob_detect_2d_srv.request.checkpoints_path = ssd_checkpoint_path_;
+        ob_detect_2d_srv.request.checkpoints_path = object_detect_checkpoint_path_;
         Util::client_request(object_detect_client_, ob_detect_2d_srv, object_detect_service_name_);
         std::vector<common_msgs::BoxPosition> box_pos = ob_detect_2d_srv.response.b_boxs;
         std::vector<float> cinfo_list = hdf5_srv.response.camera_info;
@@ -76,6 +66,11 @@ void EstimationClient::main()
         Data2Dto3D get3d(cinfo_list, Util::get_image_size(img));
         std::vector<common_msgs::CloudData> cloud_multi = get3d.get_out_data(cloud_data, box_pos);
         common_srvs::SemanticSegmentationService semantic_srv;
+        if (counter_ == 0) 
+            semantic_srv.request.reload = 1;
+        else
+            semantic_srv.request.reload = 0;
+        semantic_srv.request.semantic_class_num = semantic_class_num_;
         semantic_srv.request.input_data_multi = cloud_multi;
         semantic_srv.request.checkpoints_path = semantic_checkpoint_path_;
         Util::client_request(cloud_network_client_, semantic_srv, cloud_network_service_name_);
@@ -102,7 +97,7 @@ void EstimationClient::main()
             auto esti_cloud = UtilMsgData::extract_ins_cloudmsg(semantic_srv.response.output_data_multi[i], 1);
             common_msgs::CloudData gt_ins_parts;
             gt_ins_parts = AccuracyUtil::extract_gt_parts(gt_parts, esti_cloud);
-            auto gt_ins = max_count(gt_ins_parts);
+            auto gt_ins = AccuracyUtil::max_count(gt_ins_parts);
             auto instance_dict = UtilMsgData::get_instance_dict(gt_parts);
             for (auto iter = instance_dict.begin(); iter != instance_dict.end(); ++iter) {
                 if (iter->first != gt_ins) {

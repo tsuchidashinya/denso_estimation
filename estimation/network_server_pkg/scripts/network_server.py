@@ -13,50 +13,57 @@ from network.network_common import network_util
 class NetworkServer:
     def __init__(self):
         self.set_parameter()
-        self.object_detection_initialize()
-        self.semantic_initialize()
         rospy.Service(self.object_detect_service_name, ObjectDetectionService, self.object_detect_callback)
         rospy.Service(self.network_cloud_service_name, NetworkCloudService, self.network_cloud_callback)
         rospy.Service(self.network_semantic_service_name, SemanticSegmentationService, self.network_semantic_callback)
     
     def set_parameter(self):
         param_list = rosparam.get_param(rospy.get_name() + "/network_server")
-        self.object_detect_service_name = param_list["object_detect_service_name"]
-        self.network_cloud_service_name = param_list["network_cloud_service_name"]
-        self.network_semantic_service_name = param_list["network_semantic_service_name"]
-        self.yolo_checkpoints = param_list["yolov3"]["checkpoints"]
+        self.object_detect_service_name = "object_detect_service"
+        self.network_cloud_service_name = "network_cloud_service"
+        self.network_semantic_service_name = "network_semantic_service"
+        self.yolo_checkpoints = ""
         self.yolo_config_path = param_list["yolov3"]["config_path"]
         self.ssd_config_path = param_list["ssd"]["config_path"]
-        self.ssd_checkpoints_file = param_list["ssd"]["checkpoints_file_path"]
+        self.ssd_checkpoints_file = ""
         self.ssd_score_threshold = param_list["ssd"]["threshold"]
-        self.object_detect_mode = param_list["object_detect_mode"]
-        self.semantic_class_num = param_list["semantic_pointnet"]["class_num"]
-        self.semantic_checkpoints = param_list["semantic_pointnet"]["checkpoints"]
+        self.object_detect_mode = "ssd"
+        self.semantic_class_num = 1
+        self.semantic_checkpoints = ""
     
-    def object_detection_initialize(self):
+    def yolo_initialize(self):
+        self.yolo_config_object = yolo_run.load_config(self.yolo_config_path)
+        self.yolo_class_list = yolo_run.get_class_names(self.yolo_config_path)
+        self.yolo_net = yolo_run.create_model(self.yolo_config_object, self.device)
+        self.yolo_net = yolo_run.load_checkpoints(self.yolo_net, self.yolo_checkpoints, self.device)
+
+    def ssd_initialize(self):
+        print("ssd_initialize")
         self.device = yolo_run.get_device()
         self.ssd_network = SSDEstimation()
         self.ssd_network.setting_network(self.ssd_config_path, self.ssd_checkpoints_file, self.ssd_score_threshold, self.device)
 
     def semantic_initialize(self):
-        # self.yolo_config_object = yolo_run.load_config(self.yolo_config_path)
-        # self.yolo_class_list = yolo_run.get_class_names(self.yolo_config_path)
-        # self.yolo_net = yolo_run.create_model(self.yolo_config_object, self.device)
-        # self.yolo_net = yolo_run.load_checkpoints(self.yolo_net, self.yolo_checkpoints, self.device)
+        print("semantic_initialize")
         self.semantic_net = semantic_run.create_model(self.semantic_class_num, self.device)
         self.semantic_net = semantic_run.load_checkpoints(self.semantic_net, self.semantic_checkpoints, self.device)
         
     def object_detect_callback(self, request):
-        if self.ssd_checkpoints_file != request.checkpoints_path and request.checkpoints_path != "":
-            self.ssd_checkpoints_file = request.checkpoints_path
-            self.object_detection_initialize()
+        if self.object_detect_mode != request.model_mode and request.model_mode != "":
+            self.object_detect_mode = request.model_mode
         img = util_msg_data.rosimg_to_npimg(request.input_image)
         response = ObjectDetectionServiceResponse()
         if self.object_detect_mode == "yolo":
+            if self.yolo_checkpoints != request.checkpoints_path and request.checkpoints_path != "" or request.reload == 1:
+                self.yolo_checkpoints = request.checkpoints_path
+                self.yolo_initialize()
             detection = yolo_run.object_detection(img, self.yolo_net, self.yolo_config_object, self.device, self.yolo_class_list)
             boxes_pos = yolo_run.get_box_info(detection, img.shape[0], img.shape[1])
             response.b_boxs = boxes_pos
         elif self.object_detect_mode == "ssd":
+            if self.ssd_checkpoints_file != request.checkpoints_path and request.checkpoints_path != ""  or request.reload == 1:
+                self.ssd_checkpoints_file = request.checkpoints_path
+                self.ssd_initialize()
             boxes, _, _ = self.ssd_network.object_detection(img, self.ssd_score_threshold)
             response.b_boxs = SSDEstimation.get_box_position(boxes)
         return response
@@ -71,8 +78,9 @@ class NetworkServer:
     
     def network_semantic_callback(self, request):
         # request = SemanticSegmentationServiceRequest()
-        if self.semantic_checkpoints != request.checkpoints_path and request.checkpoints_path != "":
+        if self.semantic_checkpoints != request.checkpoints_path and request.checkpoints_path != "" or request.reload == 1:
             self.semantic_checkpoints = request.checkpoints_path
+            self.semantic_class_num = request.semantic_class_num
             self.semantic_initialize()
         out_list = []
         for i in range(len(request.input_data_multi)):

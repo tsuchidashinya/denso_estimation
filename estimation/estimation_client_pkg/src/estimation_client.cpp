@@ -2,7 +2,8 @@
 
 EstimationClient::EstimationClient(ros::NodeHandle &nh) :
 nh_(nh),
-pnh_("~")
+pnh_("~"),
+counter_(0)
 {
     set_paramenter();
     sensor_client_ = nh_.serviceClient<common_srvs::SensorService>(sensor_service_name_);
@@ -16,14 +17,15 @@ pnh_("~")
 void EstimationClient::set_paramenter()
 {
     pnh_.getParam("estimation_main", param_list);
-    visualize_service_name_ = static_cast<std::string>(param_list["visualize_service_name"]);
-    sensor_service_name_ = static_cast<std::string>(param_list["sensor_service_name"]);
-    object_detect_service_name_ = static_cast<std::string>(param_list["object_detect_service_name"]);
-    cloud_network_service_name_ = static_cast<std::string>(param_list["cloud_network_service_name"]);
-    accuracy_service_name_ = static_cast<std::string>(param_list["accuracy_service_name"]);
-    hdf5_service_name_ = static_cast<std::string>(param_list["hdf5_service_name"]);
+    visualize_service_name_ = "visualize_cloud_service";
+    sensor_service_name_ = "sensor_service";
+    object_detect_service_name_ = "object_detect_service";
+    cloud_network_service_name_ = "network_semantic_service";
+    hdf5_service_name_ = "hdf5_service";
     the_number_of_execute_ = param_list["the_number_of_execute"];
-    ssd_checkpoint_path_ = static_cast<std::string>(param_list["ssd_checkpoint_path"]);
+    object_detect_mode_ = static_cast<std::string>(param_list["object_detect_mode"]);
+    object_detect_checkpoint_path_ = static_cast<std::string>(param_list["object_detect_checkpoint_path"]);
+    semantic_class_num_ = static_cast<int>(param_list["semantic_class_num"]);
     semantic_checkpoint_path_ = static_cast<std::string>(param_list["semantic_checkpoint_path"]);
 }
 
@@ -47,10 +49,13 @@ void EstimationClient::main()
     Util::client_request(sensor_client_, sensor_srv, sensor_service_name_);
     common_msgs::CloudData sensor_cloud = sensor_srv.response.cloud_data;
     sensor_msgs::Image image = sensor_srv.response.image;
-
     common_srvs::ObjectDetectionService ob_detect_2d_srv;
+    if (counter_ == 0) 
+            ob_detect_2d_srv.request.reload = 1;
+        else 
+            ob_detect_2d_srv.request.reload = 0;
     ob_detect_2d_srv.request.input_image = image;
-    ob_detect_2d_srv.request.checkpoints_path = ssd_checkpoint_path_;
+    ob_detect_2d_srv.request.checkpoints_path = object_detect_checkpoint_path_;
     Util::client_request(object_detect_client_, ob_detect_2d_srv, object_detect_service_name_);
     std::vector<common_msgs::BoxPosition> box_pos = ob_detect_2d_srv.response.b_boxs;
     std::vector<float> cinfo_list = UtilMsgData::caminfo_to_floatlist(sensor_srv.response.camera_info);
@@ -58,8 +63,13 @@ void EstimationClient::main()
     Data2Dto3D get3d(cinfo_list, Util::get_image_size(img));
     std::vector<common_msgs::CloudData> cloud_multi = get3d.get_out_data(sensor_cloud, box_pos);
     common_srvs::SemanticSegmentationService semantic_srv;
+    if (counter_ == 0) 
+            semantic_srv.request.reload = 1;
+        else
+            semantic_srv.request.reload = 0;
     semantic_srv.request.input_data_multi = cloud_multi;
     semantic_srv.request.checkpoints_path = semantic_checkpoint_path_;
+    semantic_srv.request.semantic_class_num = semantic_class_num_;
     Util::client_request(cloud_network_client_, semantic_srv, cloud_network_service_name_);
 
     common_srvs::VisualizeCloud visualize_srv;
@@ -72,6 +82,7 @@ void EstimationClient::main()
     visualize_srv.request.cloud_data_list.push_back(final_cloud);
     visualize_srv.request.topic_name_list.push_back("final_cloud");
     Util::client_request(visualize_client_, visualize_srv, visualize_service_name_);
+    counter_++;
 }
 
 int main(int argc, char** argv)

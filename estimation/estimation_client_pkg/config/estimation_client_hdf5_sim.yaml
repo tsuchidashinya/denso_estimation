@@ -1,13 +1,9 @@
 acc_estimation_main:
-  visualize_service_name: visualize_cloud_service
-  visualize_image_service_name: visualize_image_service
-  object_detect_service_name: object_detect_service
-  cloud_network_service_name: network_semantic_service
-  accuracy_service_name: accuracy_service
-  hdf5_service_name: hdf5_open_sensor_data_service
   hdf5_open_file_path: /home/ericlab/Downloads/acc_real.hdf5
   estimation_name: estimation
-  ssd_checkpoint_path: /home/ericlab/tsuchida/2022_12/checkpoints/SSD/full_randomize/HV8/model_005000.pth
+  object_detect_mode: ssd
+  object_detect_checkpoint_path: /home/ericlab/tsuchida/2022_12/checkpoints/SSD/full_randomize/HV8/model_005000.pth
+  semantic_class_num: 2
   semantic_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/sensor_b_box_2000_noize/latest.pth
 
 decide_object_position:
@@ -22,9 +18,9 @@ decide_object_position:
   radious: 0.05
 
 data_transform_pkg:
-  f_scale: 0.968
-  cx_scale: 1.02
-  cy_scale: 1.0
+  f_scale: 0.5
+  cx_scale: 0.99
+  cy_scale: 0.9
 
 data_3D_to_2D:
   radious_x: 0.05

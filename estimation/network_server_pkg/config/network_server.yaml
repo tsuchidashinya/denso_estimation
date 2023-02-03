@@ -3,33 +3,7 @@ network_server:
   network_cloud_service_name: network_cloud_service
   network_semantic_service_name: network_semantic_service
   yolov3:
-    checkpoints: /home/ericlab/Downloads/yolov3_real_final.pth
-    # checkpoints: /home/ericlab/tsuchida/2022_11/checkpoints/Yolo/11_22_14_12_28/latest.pth
     config_path: /home/ericlab/tsuchida/ros_package/study_ws/src/denso_estimation/network/src/network/object_detection/yolov3/config/yolov3_denso.yaml
-  semantic_pointnet:
-    class_num: 2
-    # checkpoints: /home/ericlab/tsuchida/2022_11/checkpoints/SemSeg/semantic_11_23/180.pth
-    # checkpoints: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/multi_object_2000/180.pth
-    # checkpoints: /home/ericlab/Downloads/semseg_latest_net.pth
-    # checkpoints: /home/ericlab/tsuchida/2022_11/checkpoints/SemSeg/semantic_segmentation/ishiyama/PointNet_Segmentation/honban_11_15_13_39_21/latest_net.pth
-    # checkpoints: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/multi_object_sensor_ramdomize_2000/latest.pth
-    # checkpoints: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/multi_object_2000/latest.pth
-    # checkpoints: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/no_sensor_kai/latest.pth
-    # checkpoints: /home/ericlab/Downloads/sensor_b_box/latest.pth
-    # checkpoints: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/no_b_box/latest.pth
-    # checkpoints: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/sensor_b_box_kai/latest.pth
-    # checkpoints: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/sensor_b_box_para_kai/latest.pth
-    # checkpoints: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/sensor_b_box_para_kai_kai/latest.pth
-    # checkpoints: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/sensor_b_box_para_kai_final/latest.pth
-    # checkpoints: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/実験1/data_7000/40.pth
-    # checkpoints: /home/ericlab/Downloads/data_1000/latest.pth
-    # checkpoints: /home/ericlab/Downloads/data_3000/latest.pth
-    # checkpoints: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/実験1/data_5000_start/latest.pth
-    # checkpoints: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/実験1/data_4000/latest.pth
-    checkpoints: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/sensor_b_box_2000_noize/latest.pth
   ssd:
     config_path: /home/ericlab/tsuchida/ros_package/study_ws/src/denso_estimation/network/src/network/object_detection/ssd/config/yaml/vgg_ssd512_voc0712.yaml
-    # checkpoints_file_path: /home/ericlab/tsuchida/2022_11/checkpoints/SSD/ishiyama/model_final.pth
-    checkpoints_file_path: /home/ericlab/tsuchida/2022_12/checkpoints/SSD/full_randomize/HV8/model_005000.pth
     threshold: 0.9
-  object_detect_mode: ssd
