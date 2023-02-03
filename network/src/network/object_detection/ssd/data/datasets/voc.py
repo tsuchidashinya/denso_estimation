@@ -3,7 +3,7 @@ import torch.utils.data
 import numpy as np
 import xml.etree.ElementTree as ET
 from PIL import Image
-from util import util
+from util_package import util
 from network.object_detection.ssd.structures.container import Container
 from tqdm import tqdm
 import time

@@ -7,7 +7,7 @@ import yaml
 from model import YOLO, model_util
 from data import train_dataset
 import pandas as pd
-from util import util
+from util_package import util
 
 
 def print_info(info):
