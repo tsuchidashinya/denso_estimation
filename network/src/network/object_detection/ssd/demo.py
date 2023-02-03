@@ -8,7 +8,7 @@ from vizer.draw import draw_boxes
 
 from network.object_detection.ssd.config import cfg
 from network.object_detection.ssd.data.datasets import COCODataset, VOCDataset, VOCDatasetDenso
-from util import util
+from util_package import util
 import argparse
 import numpy as np
 

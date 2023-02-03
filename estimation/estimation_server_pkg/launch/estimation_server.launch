@@ -3,18 +3,18 @@
     <arg name="sim_or_real" default="sim"/>
     <node pkg="visualize_package" type="visualize_server" name="visualize_server" output="screen">
         <rosparam file="$(find visualize_package)/config/visualize_server.yaml" command="load" />
-        <rosparam file="$(find util)/config/common_parameter.yaml" command="load" />
+        <rosparam file="$(find util_package)/config/common_parameter.yaml" command="load" />
     </node>
     <group if="$(eval sim_or_real=='real')">
         <node pkg="sensor_package" type="SensorServer" name="sensor_server" output="screen">
             <rosparam file="$(find sensor_package)/config/sensor_server_real_photoneo.yaml" command="load"/>
-            <rosparam file="$(find util)/config/common_parameter.yaml" command="load" />
+            <rosparam file="$(find util_package)/config/common_parameter.yaml" command="load" />
         </node>
     </group>
     <group if="$(eval sim_or_real=='sim')">
         <node pkg="sensor_package" type="SensorServer" name="sensor_server" output="screen">
             <rosparam file="$(find sensor_package)/config/sensor_server.yaml" command="load"/>
-            <rosparam file="$(find util)/config/common_parameter.yaml" command="load" />
+            <rosparam file="$(find util_package)/config/common_parameter.yaml" command="load" />
         </node>
     </group>
     <node pkg="hdf5_package" type="hdf5_open_server.py" name="hdf5_open_server" output="screen">

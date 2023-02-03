@@ -7,7 +7,7 @@ import rospy
 from common_srvs.srv import NetworkCloudService, NetworkCloudServiceResponse, NetworkCloudServiceRequest
 from common_srvs.srv import SemanticSegmentationService, SemanticSegmentationServiceResponse, SemanticSegmentationServiceRequest
 from common_srvs.srv import ObjectDetectionService, ObjectDetectionServiceResponse, ObjectDetectionServiceRequest
-from util import util_msg_data
+from util_package import util_msg_data
 from network.network_common import network_util
 
 class NetworkServer:

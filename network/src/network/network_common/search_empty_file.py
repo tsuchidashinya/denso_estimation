@@ -1,6 +1,6 @@
 import os
 import argparse
-from util import util
+from util_package import util
 
 
 parser = argparse.ArgumentParser(description="fdf")

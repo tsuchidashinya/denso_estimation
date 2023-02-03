@@ -13,7 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   common_srvs
   cv_bridge
   pcl_ros
-  util
+  util_package
   gazebo_model_package
   tf_package
   data_transform_pkg

@@ -6,7 +6,7 @@ from network.network_common import network_util
 from network.semantic_segmentation.pointnet_semantic.data import segmentation_dataset
 from hdf5_package import hdf5_function
 from network.semantic_segmentation.pointnet_semantic.model import POINTNET_SEMANTIC
-from util import util_msg_data
+from util_package import util_msg_data
 
 
 def get_net_output(net, input_data, device):
