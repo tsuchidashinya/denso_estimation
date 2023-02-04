@@ -58,7 +58,7 @@
   <depend>cv_bridge</depend>
   <depend>pcl_ros</depend>
   <depend>util_package</depend>
-  <depend>gazebo_model_package</depend>
+  <depend>gazebo_model_pkg</depend>
   <depend>tf_package</depend>
   <depend>data_transform_pkg</depend>
 

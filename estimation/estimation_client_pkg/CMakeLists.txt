@@ -14,7 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   pcl_ros
   util_package
-  gazebo_model_package
+  gazebo_model_pkg
   tf_package
   data_transform_pkg
   accuracy_package
@@ -24,7 +24,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
  INCLUDE_DIRS include
 #  LIBRARIES estimation_client_pkg
- CATKIN_DEPENDS gazebo_model_package
+ CATKIN_DEPENDS gazebo_model_pkg
 #  DEPENDS system_lib
 )
 

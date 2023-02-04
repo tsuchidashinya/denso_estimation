@@ -7,8 +7,8 @@
 #include <common_srvs/AccuracyIouService.h>
 #include <common_srvs/Hdf5OpenAccService.h>
 #include <common_srvs/Hdf5OpenSensorDataService.h>
-#include <gazebo_model_package/decide_object_position.hpp>
-#include <gazebo_model_package/gazebo_model_move.hpp>
+#include <gazebo_model_pkg/decide_object_position.hpp>
+#include <gazebo_model_pkg/gazebo_model_move.hpp>
 #include <tf_package/tf_function.hpp>
 #include <util_package/util.hpp>
 #include <data_transform_pkg/data_3D_to_2D.hpp>
