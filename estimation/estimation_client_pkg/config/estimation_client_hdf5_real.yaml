@@ -4,8 +4,9 @@ acc_estimation_main:
   estimation_name: estimation
   object_detect_mode: ssd
   # object_detect_checkpoint_path: /home/ericlab/tsuchida/2022_12/checkpoints/SSD/full_randomize/HV8/model_005000.pth
-  object_detect_checkpoint_path: /home/ericlab/tsuchida/2022_12/checkpoints/SSD/full_randomize/t_pipe/model_005000.pth
+  # object_detect_checkpoint_path: /home/ericlab/tsuchida/2022_12/checkpoints/SSD/full_randomize/t_pipe/model_005000.pth
   # object_detect_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/SSD/HV8/full_randomizer_4000/model_005000.pth
+  object_detect_checkpoint_path: /home/ericlab/tsuchida/2023_02/checkpoints/SSD/t_pipe/t_pipe_full_radious_0_04_3000/model_002000.pth
   semantic_class_num: 2
   # semantic_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/sensor_b_box_2000_noize/latest.pth
   # semantic_checkpoint_path: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/sensor_b_box_para_kai_final/latest.pth
