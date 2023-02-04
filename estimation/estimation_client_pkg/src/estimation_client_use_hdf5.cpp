@@ -24,7 +24,7 @@ void EstimationClient::set_paramenter()
     cloud_network_service_name_ = "network_semantic_service";
     accuracy_service_name_ = "accuracy_service";
     hdf5_service_name_ = "hdf5_open_sensor_data_service";
-    hdf5_open_file_path_ = "hdf5_open_sensor_data_service";
+    hdf5_open_file_path_ = static_cast<std::string>(param_list["hdf5_open_file_path"]);
     object_detect_mode_ = static_cast<std::string>(param_list["object_detect_mode"]);
     object_detect_checkpoint_path_ = static_cast<std::string>(param_list["object_detect_checkpoint_path"]);
     semantic_class_num_ = static_cast<int>(param_list["semantic_class_num"]);
@@ -36,8 +36,9 @@ void EstimationClient::main()
 {
     while (1) {
         common_srvs::Hdf5OpenSensorDataService hdf5_srv;
-        hdf5_srv.request.index = counter_;
+        hdf5_srv.request.index = counter_ + 2;
         hdf5_srv.request.hdf5_open_file_path = hdf5_open_file_path_;
+        hdf5_srv.request.is_reload = 1;
         Util::client_request(hdf5_client_, hdf5_srv, hdf5_service_name_);
         sensor_msgs::Image image = hdf5_srv.response.image;
         common_msgs::CloudData cloud_data = hdf5_srv.response.cloud_data;
@@ -47,14 +48,22 @@ void EstimationClient::main()
             ob_detect_2d_srv.request.reload = 1;
         else 
             ob_detect_2d_srv.request.reload = 0;
+        ob_detect_2d_srv.request.model_mode = "ssd";
         ob_detect_2d_srv.request.input_image = hdf5_srv.response.image;
         ob_detect_2d_srv.request.checkpoints_path = object_detect_checkpoint_path_;
         Util::client_request(object_detect_client_, ob_detect_2d_srv, object_detect_service_name_);
         std::vector<common_msgs::BoxPosition> box_pos = ob_detect_2d_srv.response.b_boxs;
+        Util::message_show("box", box_pos.size());
+        Util::message_show("camera_info", hdf5_srv.response.camera_info.size());
         std::vector<float> cinfo_list = hdf5_srv.response.camera_info;
+        Util::message_show("58", "ok");
         cv::Mat img = UtilMsgData::rosimg_to_cvimg(image, sensor_msgs::image_encodings::BGR8);
+        Util::message_show("60", "ok");
         Data2Dto3D get3d(cinfo_list, Util::get_image_size(img));
+        Util::message_show("63", "ok");
         std::vector<common_msgs::CloudData> cloud_multi = get3d.get_out_data(cloud_data, box_pos);
+        Util::message_show("cloud_multi", cloud_multi.size());
+        Util::message_show("cloud_multi_1", cloud_multi[1].x.size());
         common_srvs::SemanticSegmentationService semantic_srv;
         if (counter_ == 0) 
             semantic_srv.request.reload = 1;
