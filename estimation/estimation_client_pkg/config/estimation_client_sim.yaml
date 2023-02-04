@@ -14,13 +14,8 @@ decide_object_position:
   box_height: 0.01
   box_name: denso_box
   object_height: 0.15
-  radious: 0.05
 
 data_transform_pkg:
   f_scale: 0.5
   cx_scale: 0.99
   cy_scale: 0.9
-
-data_3D_to_2D:
-  radious_x: 0.05
-  radious_y: 0.05
