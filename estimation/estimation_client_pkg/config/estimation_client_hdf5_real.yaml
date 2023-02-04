@@ -1,13 +1,16 @@
 acc_estimation_main:
-  hdf5_open_file_path: /home/ericlab/tsuchida/test_data/HV8_sensor_real.hdf5
+  # hdf5_open_file_path: /home/ericlab/tsuchida/test_data/HV8_sensor_real.hdf5
+  hdf5_open_file_path: /home/ericlab/tsuchida/test_data/real_t_pipe_sensor.hdf5
   estimation_name: estimation
   object_detect_mode: ssd
   # object_detect_checkpoint_path: /home/ericlab/tsuchida/2022_12/checkpoints/SSD/full_randomize/HV8/model_005000.pth
-  object_detect_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/SSD/HV8/full_randomizer_4000/model_005000.pth
+  object_detect_checkpoint_path: /home/ericlab/tsuchida/2022_12/checkpoints/SSD/full_randomize/t_pipe/model_005000.pth
+  # object_detect_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/SSD/HV8/full_randomizer_4000/model_005000.pth
   semantic_class_num: 2
   # semantic_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/sensor_b_box_2000_noize/latest.pth
   # semantic_checkpoint_path: /home/ericlab/tsuchida/2022_12/checkpoints/Semseg/sensor_b_box_para_kai_final/latest.pth
-  semantic_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/4000_propose/latest.pth
+  # semantic_checkpoint_path: /home/ericlab/tsuchida/2023_01/checkpoints/Semseg/HV8/4000_propose/latest.pth
+  semantic_checkpoint_path: /home/ericlab/tsuchida/2023_02/checkpoints/Semseg/t_pipe/3000_propose/latest.pth
   
 decide_object_position:
   sensor_name: phoxi_camera

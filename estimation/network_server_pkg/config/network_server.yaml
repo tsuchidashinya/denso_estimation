@@ -6,4 +6,4 @@ network_server:
     config_path: /home/ericlab/tsuchida/ros_package/study_ws/src/denso_estimation/network/src/network/object_detection/yolov3/config/yolov3_denso.yaml
   ssd:
     config_path: /home/ericlab/tsuchida/ros_package/study_ws/src/denso_estimation/network/src/network/object_detection/ssd/config/yaml/vgg_ssd512_voc0712.yaml
-    threshold: 0.9
+    threshold: 0.95
