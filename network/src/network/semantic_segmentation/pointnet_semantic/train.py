@@ -82,7 +82,7 @@ if __name__ == '__main__':
         if epoch % args.save_epoch_freq == 0:
             print("saving the model at the end of epoch %d" % (epoch))
             if not os.path.exists(args.checkpoints):
-                os.mkdir(args.checkpoints)
+                os.makedirs(args.checkpoints)
             save_file = os.path.join(args.checkpoints, str(epoch) + ".pth")
             torch.save(net.state_dict(), save_file)
             save_file_latest = os.path.join(args.checkpoints, "latest.pth")
