@@ -17,6 +17,9 @@ estimation_name_("esti")
 
 void EstimationClient::set_paramenter()
 {
+    pnh_.getParam("common_parameter", param_list);
+    world_frame_ = static_cast<std::string>(param_list["world_frame"]);
+    sensor_frame_ = static_cast<std::string>(param_list["sensor_frame"]);
     pnh_.getParam("acc_estimation_main", param_list);
     visualize_service_name_ = "visualize_cloud_service";
     vis_image_service_name_ = "visualize_image_service";
@@ -36,7 +39,7 @@ void EstimationClient::main()
 {
     while (1) {
         common_srvs::Hdf5OpenSensorDataService hdf5_srv;
-        hdf5_srv.request.index = counter_ + 2;
+        hdf5_srv.request.index = counter_;
         hdf5_srv.request.hdf5_open_file_path = hdf5_open_file_path_;
         hdf5_srv.request.is_reload = 1;
         Util::client_request(hdf5_client_, hdf5_srv, hdf5_service_name_);
@@ -92,12 +95,17 @@ void EstimationClient::main()
         }
         auto sensor_cloud = UtilMsgData::draw_all_ins_cloudmsg(hdf5_srv.response.cloud_data, 0);
         all_sensor_color_cloud = UtilMsgData::concat_cloudmsg(sensor_cloud, all_color_cloud);
+        CloudProcess cloud_process;
+        cloud_process.set_crop_frame(sensor_frame_, world_frame_);
+        all_sensor_color_cloud = cloud_process.cropbox_segmenter(all_sensor_color_cloud);
         visualize_srv.request.cloud_data_list.push_back(all_sensor_color_cloud);
         visualize_srv.request.topic_name_list.push_back("all_sensor_color_cloud" + std::to_string(counter_));
         visualize_srv.request.cloud_data_list.push_back(final_cloud);
         visualize_srv.request.topic_name_list.push_back(estimation_name_ + "_" + "final_cloud_" + std::to_string(counter_));
         Util::client_request(visualize_client_, visualize_srv, visualize_service_name_);
-        if (counter_ >= hdf5_srv.response.data_size - 2) {
+        ROS_INFO_STREAM("estimation " << counter_);
+        if (counter_ >= hdf5_srv.response.data_size - 1) {
+            ROS_INFO_STREAM("finish!!");
             break;
         }
         counter_++;

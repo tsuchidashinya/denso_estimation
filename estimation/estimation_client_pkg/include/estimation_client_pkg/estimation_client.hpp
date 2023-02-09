@@ -16,6 +16,7 @@
 #include <data_transform_pkg/func_data_convertion.hpp>
 #include <opencv2/opencv.hpp>
 #include <accuracy_package/accuracy_util.hpp>
+#include <sensor_package/cloud_process.hpp>
 
 
 class EstimationClient

@@ -18,6 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf_package
   data_transform_pkg
   accuracy_package
+  sensor_package
 )
 
 

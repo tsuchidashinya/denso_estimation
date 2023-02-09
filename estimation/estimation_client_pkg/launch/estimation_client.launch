@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
 <launch>
+    <node pkg="calibration_package" type="calibrate_tf_broadcaster" name="calibrate_tf_broadcaster">
+        <rosparam file="$(find calibration_package)/config/calibrate_tf_broadcaster.yaml" command="load" ns="" />
+        <rosparam file="$(find util_package)/config/common_parameter.yaml" command="load" />
+    </node>
     <arg name="sim_or_real" default="sim"/>
     <arg name="hdf5_use" default="false"/>
     
@@ -7,11 +11,13 @@
         <group if="$(eval sim_or_real=='sim')">
             <node pkg="estimation_client_pkg" type="estimation_client_use_hdf5" name="estimation_client" output="screen">
                 <rosparam file="$(find estimation_client_pkg)/config/estimation_client_hdf5_sim.yaml" command="load" ns="" />
+                <rosparam file="$(find util_package)/config/common_parameter.yaml" command="load" />
             </node>
         </group>
         <group if="$(eval sim_or_real=='real')">
             <node pkg="estimation_client_pkg" type="estimation_client_use_hdf5" name="estimation_client_real_sensor_hdf5" output="screen">
                 <rosparam file="$(find estimation_client_pkg)/config/estimation_client_hdf5_real.yaml" command="load" ns="" />
+                <rosparam file="$(find util_package)/config/common_parameter.yaml" command="load" />
             </node>
         </group>
     </group>
